@@ -1,0 +1,62 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Images\add-fill.png" />
+    <None Remove="Images\add.png" />
+    <None Remove="Images\film-128x128.png" />
+    <None Remove="Images\film-64x64.png" />
+    <None Remove="Images\icon-128x128.png" />
+    <None Remove="Images\icon-64x64.png" />
+    <None Remove="Images\icon.png" />
+    <None Remove="Images\icon_.png" />
+    <None Remove="Images\left-arrow.png" />
+    <None Remove="Images\more.png" />
+    <None Remove="Images\music-note-128x128.png" />
+    <None Remove="Images\music-note-32x32.png" />
+    <None Remove="Images\music-note-64x64.png" />
+    <None Remove="Images\music-note.jpg" />
+    <None Remove="Images\music-note.png" />
+    <None Remove="Images\musical-note-128x128.png" />
+    <None Remove="Images\musical-note-64x64.png" />
+    <None Remove="Images\musical-note.png" />
+    <None Remove="Images\plus.png" />
+    <None Remove="Images\right-arrow.png" />
+    <None Remove="Images\white-arrow-transparent-png-22.png" />
+    <None Remove="Images\white-left-arrow.png" />
+    <None Remove="Images\white-right-arrow.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\add-fill.png" />
+    <Resource Include="Images\add.png" />
+    <Resource Include="Images\film-64x64.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\icon-128x128.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\icon-64x64.png" />
+    <Resource Include="Images\icon.png" />
+    <Resource Include="Images\left-arrow.png" />
+    <Resource Include="Images\more.png" />
+    <Resource Include="Images\musical-note-64x64.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\right-arrow.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Images\music-note - Copy.jpg">
+      <CopyToOutputDirectory></CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
