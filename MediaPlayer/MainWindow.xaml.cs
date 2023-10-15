@@ -10,11 +10,10 @@ namespace MediaPlayer
     /// </summary>
     public partial class MainWindow : Window
     {
-        List<Media> mediaList = new List<Media>();
+        private List<Media> mediaList = new List<Media>();
         public MainWindow()
         {
             InitializeComponent();
-            this.DataContext = this;
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
