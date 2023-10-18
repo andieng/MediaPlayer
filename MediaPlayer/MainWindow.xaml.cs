@@ -5,6 +5,7 @@ using System.IO;
 using System.Windows;
 using WMPLib;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace MediaPlayer
 {
@@ -35,30 +36,38 @@ namespace MediaPlayer
 
             openFileDialog.Title = "Choose media files";
             openFileDialog.Filter = "Media files|*.mp3;*.mp4;*.wav;*.flac;*.ogg;*.avi;*.mkv|All files|*.*";
+            openFileDialog.Multiselect = true;
 
             if (openFileDialog.ShowDialog() == true)
             {
-                string selectedFilePath = openFileDialog.FileName;
+                string[] selectedFilePaths = openFileDialog.FileNames; 
 
-                var player = new WindowsMediaPlayer();
-                var clip = player.newMedia(selectedFilePath);
+                foreach (string selectedFilePath in selectedFilePaths)
+                {
+                    var player = new WindowsMediaPlayer();
+                    var clip = player.newMedia(selectedFilePath);
 
-                string extension = Path.GetExtension(selectedFilePath).ToLower();
+                    string extension = Path.GetExtension(selectedFilePath).ToLower();
 
-                if (extension == ".mp3" || extension == ".flac" || extension == ".ogg" || extension == ".wav")
-                {
-                    mediaList.Add(new Media(selectedFilePath, clip.duration, thumbnail_audio));
-                }
-                else if (extension == ".mp4" || extension == ".avi" || extension == ".mkv")
-                {
-                    mediaList.Add(new Media(selectedFilePath, clip.duration, thumbnail_video));
-                }
-                else
-                {
-                    // Xử lý ngoại lệ
+                    bool fileExists = mediaList.Any(media => media.FilePath == selectedFilePath);
+
+                    if (!fileExists)
+                    {
+                        if (extension == ".mp3" || extension == ".flac" || extension == ".ogg" || extension == ".wav")
+                        {
+                            mediaList.Add(new Media(selectedFilePath, clip.duration, thumbnail_audio));
+                        }
+                        else if (extension == ".mp4" || extension == ".avi" || extension == ".mkv")
+                        {
+                            mediaList.Add(new Media(selectedFilePath, clip.duration, thumbnail_video));
+                        }
+                        else
+                        {
+                            // Xử lý ngoại lệ
+                        }
+                    }
                 }
             }
-
         }
     }
 }
