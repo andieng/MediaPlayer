@@ -1,7 +1,10 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows;
+using WMPLib;
+using System.Collections.ObjectModel;
 
 namespace MediaPlayer
 {
@@ -10,30 +13,52 @@ namespace MediaPlayer
     /// </summary>
     public partial class MainWindow : Window
     {
-        private List<Media> mediaList = new List<Media>();
+        private ObservableCollection<Media> mediaList = new ObservableCollection<Media>();
+        string thumbnail_audio = "Images/musical-note-64x64.png";
+        string thumbnail_video = "Images/film-64x64.png";
         public MainWindow()
         {
             InitializeComponent();
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            string img = "Images/musical-note-64x64.png";
-            string img2 = "Images/film-64x64.png";
-
             string currentDir = AppDomain.CurrentDomain.BaseDirectory;
-            mediaList.Add(new Media(currentDir + "cruel-summer1.mp3", 644000.45, img));
-            mediaList.Add(new Media(currentDir + "cruel-summer2.mp3", 100000.5,img2));
-            mediaList.Add(new Media(currentDir + "cruel-summer3.mp3", 6000.8, img));
-            mediaList.Add(new Media(currentDir + "cruel-summer4.mp3", 279.25, img2));
-            mediaList.Add(new Media(currentDir + "cruel-summer5.mp3", 103000.6, img2));
-            mediaList.Add(new Media(currentDir + "cruel-summer6.mp3", 644000.45, img));
-            mediaList.Add(new Media(currentDir + "cruel-summer7.mp3", 100000.5, img2));
-            mediaList.Add(new Media(currentDir + "cruel-summer8.mp3", 6000.8, img));
-            mediaList.Add(new Media(currentDir + "cruel-summer9.mp3", 279.25, img2));
-            mediaList.Add(new Media(currentDir + "cruel-summer10.mp3", 103000.6, img2));
-            mediaList.Add(new Media(currentDir + "cruel-summer11.mp3", 644000.45, img));
-            mediaList.Add(new Media(currentDir + "cruel-summer12.mp3", 644000.45, img));
+            mediaList.Add(new Media(currentDir + "cruel-summer1.mp3", 644000.45, thumbnail_audio));
+            mediaList.Add(new Media(currentDir + "cruel-summer2.mp3", 100, thumbnail_video));
+
             plListView.ItemsSource = mediaList;
+        }
+
+        private void addButton_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+
+            openFileDialog.Title = "Choose media files";
+            openFileDialog.Filter = "Media files|*.mp3;*.mp4;*.wav;*.flac;*.ogg;*.avi;*.mkv|All files|*.*";
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                string selectedFilePath = openFileDialog.FileName;
+
+                var player = new WindowsMediaPlayer();
+                var clip = player.newMedia(selectedFilePath);
+
+                string extension = Path.GetExtension(selectedFilePath).ToLower();
+
+                if (extension == ".mp3" || extension == ".flac" || extension == ".ogg" || extension == ".wav")
+                {
+                    mediaList.Add(new Media(selectedFilePath, clip.duration, thumbnail_audio));
+                }
+                else if (extension == ".mp4" || extension == ".avi" || extension == ".mkv")
+                {
+                    mediaList.Add(new Media(selectedFilePath, clip.duration, thumbnail_video));
+                }
+                else
+                {
+                    // Xử lý ngoại lệ
+                }
+            }
+
         }
     }
 }

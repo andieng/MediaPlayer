@@ -57,7 +57,7 @@
                 <Image Grid.Column="0" Source="./Images/icon-128x128.png" Width="28" Height="28" />
                 <TextBlock Grid.Column="1" Text="Playlist" FontSize="22"
                            FontWeight="Bold" Margin="12 0 0 0" VerticalAlignment="Center" />
-                <Button x:Name="addButton" Width="26" Height="26"
+                <Button x:Name="addButton" Click="addButton_Click" Width="26" Height="26"
                         Grid.Column="2" Margin="0 0 10 0"
                         Style="{StaticResource NoHoverStyle}">
                     <Image Width="26" Height="26">
