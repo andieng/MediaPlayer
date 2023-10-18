@@ -6,12 +6,10 @@ using System.Windows;
 using WMPLib;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows.Controls;
 
 namespace MediaPlayer
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         private ObservableCollection<Media> mediaList = new ObservableCollection<Media>();
@@ -68,6 +66,22 @@ namespace MediaPlayer
                     }
                 }
             }
+        }
+
+        private void OnDeleteClick(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button)
+            {
+                if (button.Tag is Media media)
+                {
+                    mediaList.Remove(media);
+                }
+            }
+        }
+
+        private void OnDetailClick(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("detail");
         }
     }
 }

@@ -54,6 +54,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DropdownMenuControl\DropdownMenuControl.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="Images\add-fill.png" />
     <Resource Include="Images\add.png" />
     <Resource Include="Images\film-64x64.png">
