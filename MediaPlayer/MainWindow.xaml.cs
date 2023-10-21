@@ -27,7 +27,10 @@ namespace MediaPlayer
             string currentDir = AppDomain.CurrentDomain.BaseDirectory;
             mediaList.Add(new Media(currentDir + "cruel-summer1.mp3", 644000.45, thumbnail_audio));
             mediaList.Add(new Media(currentDir + "cruel-summer2.mp3", 100, thumbnail_video));
-
+            if (mediaList.Count == 0)
+            {
+                saveButton.IsEnabled = false;
+            }
             plListView.ItemsSource = mediaList;
         }
 
@@ -97,13 +100,24 @@ namespace MediaPlayer
             if (folderDialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
                 string selectedFolderPath = folderDialog.FileName;
-                string newFolderName = "MyMediaFolder";
-                string newFolderPath = Path.Combine(selectedFolderPath, newFolderName);
-
-                if (!Directory.Exists(newFolderPath))
+                string newFolderName = "";
+                string newFolderPath = "";
+                int i = 0;
+                do
                 {
-                    Directory.CreateDirectory(newFolderPath);
-                }
+                    if (i == 0)
+                    {
+                        newFolderName = "MyMediaFolder";
+                    }
+                    else
+                    {
+                        newFolderName = $"MyMediaFolder({i})";
+                    }
+                    newFolderPath = Path.Combine(selectedFolderPath, newFolderName);
+                    i++;
+                } while (Directory.Exists(newFolderPath));
+                Directory.CreateDirectory(newFolderPath);
+
                 foreach (var media in mediaList)
                 {
                     string fileName = Path.GetFileName(media.FilePath);
@@ -118,9 +132,8 @@ namespace MediaPlayer
                         Console.WriteLine($"Error downloading file: {ex.Message}");
                     }
                 }
+                MessageBox.Show("Saved");
             }
-
-
               
         }
 
@@ -129,8 +142,6 @@ namespace MediaPlayer
 
         private void addListPathFile(string[] selectedFilePaths)
         {
-       
-
                 foreach (string selectedFilePath in selectedFilePaths)
                 {
                     var player = new WindowsMediaPlayer();
@@ -156,6 +167,10 @@ namespace MediaPlayer
                         }
                     }
                 }
+            if (mediaList.Count > 0)
+            {
+                saveButton.IsEnabled = true;
+            }
         }
         private void importButton_Click(object sender, RoutedEventArgs e)
         {
