@@ -16,7 +16,6 @@ namespace MediaPlayer
     public partial class MainWindow : Window
     {
         private ObservableCollection<Media> mediaList = new ObservableCollection<Media>();
-        private bool hasMediaListBeenSaved = false;
         string thumbnail_audio = "Images/musical-note-64x64.png";
         string thumbnail_video = "Images/film-64x64.png";
         public MainWindow()
@@ -119,8 +118,6 @@ namespace MediaPlayer
                         Console.WriteLine($"Error downloading file: {ex.Message}");
                     }
                 }
-                mediaList.Clear();
-                hasMediaListBeenSaved = true;
             }
 
 
@@ -162,11 +159,6 @@ namespace MediaPlayer
         }
         private void importButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!hasMediaListBeenSaved)
-            {
-                MessageBox.Show("Please save your media files before loading new ones.", "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
             var folderDialog = new CommonOpenFileDialog
             {
                 IsFolderPicker = true,
@@ -175,11 +167,11 @@ namespace MediaPlayer
 
             if (folderDialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
+                mediaList.Clear();
                 string selectedFolderPath = folderDialog.FileName;
                 string[] files = Directory.GetFiles(selectedFolderPath, "*", SearchOption.AllDirectories);
                 addListPathFile(files);
             }
-            hasMediaListBeenSaved = true;
         }
 
     }
