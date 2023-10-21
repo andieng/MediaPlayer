@@ -2,21 +2,32 @@
 using System;
 using System.ComponentModel;
 using System.IO;
-//using System.IO;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace MediaPlayer
 {
-    class Media : INotifyPropertyChanged
+    public class Media : INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler? PropertyChanged;
-
         public string? FilePath { get; set; }
         public ImageSource? PreviewImage { get; set; }
         public string? Name
         {
             get => Path.GetFileNameWithoutExtension(FilePath);
+        }
+        public string? Type
+        {
+            get
+            {
+                if (Path.GetExtension(FilePath) == ".mp4")
+                {
+                    return "video";
+                } 
+                else
+                {
+                    return "music";
+                }
+            }
         }
         public Uri Source { get; set; }
         public double Duration { get; set; }
@@ -36,11 +47,16 @@ namespace MediaPlayer
         {
             this.FilePath = filePath;
             this.Duration = duration;
-            string workDir = Environment.CurrentDirectory;
-            string projectDir = Directory.GetParent(workDir).Parent.Parent.FullName;
-            Uri uri = new Uri($"{projectDir}/{previewImage}", UriKind.Absolute);
+            string workDir = AppDomain.CurrentDomain.BaseDirectory;
+            Uri uri = new Uri($"{workDir}/{previewImage}", UriKind.Absolute);
             this.PreviewImage = new BitmapImage(uri);
             this.Source = new Uri(this.FilePath, UriKind.Absolute);
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

@@ -46,6 +46,49 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+        <Style x:Key="MediaPlayControlStyle" TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border Background="{TemplateBinding Background}" BorderThickness="3">
+                            <Border.BorderBrush>
+                                <LinearGradientBrush EndPoint="0.7,1" StartPoint="0.3,0">
+                                    <GradientStop Color="#FFB50B80" Offset="0.8"/>
+                                    <GradientStop Color="#FF9D1463" Offset="0.7"/>
+                                    <GradientStop Color="#FFF3701A" />
+                                </LinearGradientBrush>
+                            </Border.BorderBrush>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FF0F0F0F"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="MediaControlStyle" TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border Background="{TemplateBinding Background}" BorderThickness="0">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FF0F0F0F"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
         <Style x:Key="FillStyle" TargetType="{x:Type Button}">
             <Setter Property="Background" Value="#FFF05487"/>
             <Setter Property="Foreground" Value="#fff" />
@@ -109,6 +152,7 @@
         <Style x:Key="ListViewTransparentStyle" TargetType="{x:Type ListViewItem}">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Margin" Value="0 4 0 4" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ListViewItem}">
@@ -120,6 +164,9 @@
             </Setter>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FFF6F6F6"/>
+                </Trigger>
+                <Trigger Property="IsSelected" Value="true">
                     <Setter Property="Background" Value="#FFF6F6F6"/>
                 </Trigger>
             </Style.Triggers>
