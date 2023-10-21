@@ -149,7 +149,7 @@ namespace MediaPlayer
         {
             currentMediaElement.Visibility = Visibility.Visible;
             mediaControl.Visibility = Visibility.Visible;
-            //mediaNameTextBlock.Text = currentMedia.Name + "hahah ah h ahah ahah haha h a h ahh ah ahah ahha ha";
+            mediaNameTextBlock.Text = currentMedia.Name; 
         }
 
         private void currentMediaElement_MediaEnded(object sender, RoutedEventArgs e)
