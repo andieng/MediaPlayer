@@ -10,6 +10,7 @@
   <ItemGroup>
     <None Remove="Images\add-fill.png" />
     <None Remove="Images\add.png" />
+    <None Remove="Images\back.png" />
     <None Remove="Images\film-128x128.png" />
     <None Remove="Images\film-64x64.png" />
     <None Remove="Images\icon-128x128.png" />
@@ -26,36 +27,88 @@
     <None Remove="Images\musical-note-128x128.png" />
     <None Remove="Images\musical-note-64x64.png" />
     <None Remove="Images\musical-note.png" />
+    <None Remove="Images\next.png" />
+    <None Remove="Images\pause.png" />
+    <None Remove="Images\play %281%29.png" />
+    <None Remove="Images\play %282%29.png" />
+    <None Remove="Images\play.png" />
     <None Remove="Images\plus.png" />
     <None Remove="Images\right-arrow.png" />
+    <None Remove="Images\shuffle-off.png" />
+    <None Remove="Images\shuffle.png" />
     <None Remove="Images\white-arrow-transparent-png-22.png" />
     <None Remove="Images\white-left-arrow.png" />
     <None Remove="Images\white-right-arrow.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Images\add-fill.png" />
-    <Resource Include="Images\add.png" />
+    <Resource Include="Images\add-fill.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\add.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\back.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Images\film-64x64.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Images\icon-128x128.png" />
+    <Resource Include="Images\icon-128x128.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Images\icon-64x64.png" />
-    <Resource Include="Images\icon.png" />
-    <Resource Include="Images\left-arrow.png" />
-    <Resource Include="Images\more.png" />
+    <Resource Include="Images\icon-64x64.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\icon.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\left-arrow.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\more.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\musical-note-128x128.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Images\musical-note-64x64.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Images\right-arrow.png" />
+    <Resource Include="Images\next.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\pause.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\play.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\right-arrow.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\shuffle-off.png" />
+    <Resource Include="Images\shuffle.png" />
   </ItemGroup>
 
   <ItemGroup>
     <None Update="Images\music-note - Copy.jpg">
       <CopyToOutputDirectory></CopyToOutputDirectory>
+    </None>
+    <None Update="Media\3d_animation.mp4">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Media\Random - Sound Effect.mp4">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Media\street-food-112193.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Media\trunk-151808.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
