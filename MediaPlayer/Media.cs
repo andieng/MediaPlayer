@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Graph.Models.CallRecords;
+using System;
 using System.ComponentModel;
 using System.IO;
 using System.Windows.Media;
@@ -28,6 +29,7 @@ namespace MediaPlayer
                 }
             }
         }
+        public Uri Source { get; set; }
         public double Duration { get; set; }
         public string DurationString 
         { 
@@ -48,6 +50,7 @@ namespace MediaPlayer
             string workDir = AppDomain.CurrentDomain.BaseDirectory;
             Uri uri = new Uri($"{workDir}/{previewImage}", UriKind.Absolute);
             this.PreviewImage = new BitmapImage(uri);
+            this.Source = new Uri(this.FilePath, UriKind.Absolute);
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

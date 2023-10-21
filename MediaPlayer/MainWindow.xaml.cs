@@ -1,4 +1,5 @@
-﻿using MediaPlayer.Keys;
+﻿using Microsoft.Win32;
+using MediaPlayer.Keys;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,20 +10,25 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using WMPLib;
+using System.Collections.ObjectModel;
+using Path = System.IO.Path;
+using System.Net;
+using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace MediaPlayer
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
-        private List<Media> mediaList = new List<Media>();
         private Media? currentMedia;
         private bool isPlayingMedia = false;
         private bool isShuffling = false;
         private DispatcherTimer timerVideoTime;
         private TimeSpan totalTime;
+        private ObservableCollection<Media> mediaList = new ObservableCollection<Media>();
+
+        string thumbnail_audio = "Images/musical-note-64x64.png";
+        string thumbnail_video = "Images/film-64x64.png";
 
         public MainWindow()
         {
@@ -32,7 +38,7 @@ namespace MediaPlayer
             HotkeysManager.SetupSystemHook();
 
             // Save hotkey
-            //HotkeysManager.AddHotkey(new GlobalHotkey(ModifierKeys.Control, Key.S, savePlaylist));
+            HotkeysManager.AddHotkey(new GlobalHotkey(ModifierKeys.Control, Key.S, savePlaylist));
 
             // Play & Pause hotkey
             HotkeysManager.AddHotkey(new GlobalHotkey(ModifierKeys.Control, Key.P, playOrPauseMedia));
@@ -49,28 +55,168 @@ namespace MediaPlayer
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            string img = "Images/musical-note-64x64.png";
-            string img2 = "Images/film-64x64.png";
-
             string currentDir = AppDomain.CurrentDomain.BaseDirectory;
-            mediaList.Add(new Media("Media/trunk-151808.mp3", 644000.45, img));
-            mediaList.Add(new Media("Media/street-food-112193.mp3", 644000.45, img));
-            mediaList.Add(new Media("Media/3d_animation.mp4", 100000.5, img2));
-            mediaList.Add(new Media("Media/3d_animation.mp4", 100000.5, img2));
-            mediaList.Add(new Media("Media/Random - Sound Effect.mp4", 100000.5, img2));
-            mediaList.Add(new Media("Media/trunk-151808.mp3", 644000.45, img));
-            mediaList.Add(new Media("Media/street-food-112193.mp3", 644000.45, img));
-            mediaList.Add(new Media("Media/3d_animation.mp4", 100000.5, img2));
-            mediaList.Add(new Media("Media/3d_animation.mp4", 100000.5, img2));
-            mediaList.Add(new Media("Media/Random - Sound Effect.mp4", 100000.5, img2));
-            mediaList.Add(new Media("Media/trunk-151808.mp3", 644000.45, img));
-            mediaList.Add(new Media("Media/street-food-112193.mp3", 644000.45, img));
-            mediaList.Add(new Media("Media/3d_animation.mp4", 100000.5, img2));
-            mediaList.Add(new Media("Media/3d_animation.mp4", 100000.5, img2));
-            mediaList.Add(new Media("Media/Random - Sound Effect.mp4", 100000.5, img2));
-
+            mediaList.Add(new Media(currentDir + "cruel-summer1.mp3", 644000.45, thumbnail_audio));
+            mediaList.Add(new Media(currentDir + "cruel-summer2.mp3", 100, thumbnail_video));
+            if (mediaList.Count == 0)
+            {
+                saveButton.IsEnabled = false;
+            }
             plListView.ItemsSource = mediaList;
         }
+
+        private void addButton_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+
+            openFileDialog.Title = "Choose media files";
+            openFileDialog.Filter = "Media files|*.mp3;*.mp4;*.wav;*.flac;*.ogg;*.avi;*.mkv|All files|*.*";
+            openFileDialog.Multiselect = true;
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                string[] selectedFilePaths = openFileDialog.FileNames; 
+
+                foreach (string selectedFilePath in selectedFilePaths)
+                {
+                    var player = new WindowsMediaPlayer();
+                    var clip = player.newMedia(selectedFilePath);
+
+                    string extension = Path.GetExtension(selectedFilePath).ToLower();
+
+                    bool fileExists = mediaList.Any(media => media.FilePath == selectedFilePath);
+
+                    if (!fileExists)
+                    {
+                        if (extension == ".mp3" || extension == ".flac" || extension == ".ogg" || extension == ".wav")
+                        {
+                            mediaList.Add(new Media(selectedFilePath, clip.duration, thumbnail_audio));
+                        }
+                        else if (extension == ".mp4" || extension == ".avi" || extension == ".mkv")
+                        {
+                            mediaList.Add(new Media(selectedFilePath, clip.duration, thumbnail_video));
+                        }
+                        else
+                        {
+                            // Xử lý ngoại lệ
+                        }
+                    }
+                }
+            }
+        }
+
+        private void OnDeleteClick(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button)
+            {
+                if (button.Tag is Media media)
+                {
+                    mediaList.Remove(media);
+                }
+            }
+        }
+
+        private void saveButton_Click(object sender, RoutedEventArgs e)
+        {
+            savePlaylist();
+        }
+
+        private void savePlaylist()
+        {
+            var folderDialog = new CommonOpenFileDialog
+            {
+                IsFolderPicker = true,
+                Title = "Select a Folder"
+            };
+
+            if (folderDialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                string selectedFolderPath = folderDialog.FileName;
+                string newFolderName = "";
+                string newFolderPath = "";
+                int i = 0;
+                do
+                {
+                    if (i == 0)
+                    {
+                        newFolderName = "MyMediaFolder";
+                    }
+                    else
+                    {
+                        newFolderName = $"MyMediaFolder ({i})";
+                    }
+                    newFolderPath = Path.Combine(selectedFolderPath, newFolderName);
+                    i++;
+                } while (Directory.Exists(newFolderPath));
+                Directory.CreateDirectory(newFolderPath);
+
+                foreach (var media in mediaList)
+                {
+                    string fileName = Path.GetFileName(media.FilePath);
+                    string filePath = Path.Combine(newFolderPath, fileName);
+                    WebClient webClient = new WebClient();
+                    try
+                    {
+                        webClient.DownloadFile(media.Source.AbsoluteUri, filePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error downloading file: {ex.Message}");
+                    }
+                }
+            }
+        }
+
+
+        private void addListPathFile(string[] selectedFilePaths)
+        {
+                foreach (string selectedFilePath in selectedFilePaths)
+                {
+                    var player = new WindowsMediaPlayer();
+                    var clip = player.newMedia(selectedFilePath);
+
+                    string extension = Path.GetExtension(selectedFilePath).ToLower();
+
+                    bool fileExists = mediaList.Any(media => media.FilePath == selectedFilePath);
+
+                    if (!fileExists)
+                    {
+                        if (extension == ".mp3" || extension == ".flac" || extension == ".ogg" || extension == ".wav")
+                        {
+                            mediaList.Add(new Media(selectedFilePath, clip.duration, thumbnail_audio));
+                        }
+                        else if (extension == ".mp4" || extension == ".avi" || extension == ".mkv")
+                        {
+                            mediaList.Add(new Media(selectedFilePath, clip.duration, thumbnail_video));
+                        }
+                        else
+                        {
+                            // Xử lý ngoại lệ
+                        }
+                    }
+                }
+            if (mediaList.Count > 0)
+            {
+                saveButton.IsEnabled = true;
+            }
+        }
+        private void importButton_Click(object sender, RoutedEventArgs e)
+        {
+            var folderDialog = new CommonOpenFileDialog
+            {
+                IsFolderPicker = true,
+                Title = "Select a Folder"
+            };
+
+            if (folderDialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                mediaList.Clear();
+                string selectedFolderPath = folderDialog.FileName;
+                string[] files = Directory.GetFiles(selectedFolderPath, "*", SearchOption.AllDirectories);
+                addListPathFile(files);
+            }
+        }
+
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             HotkeysManager.ShutdownSystemHook();
