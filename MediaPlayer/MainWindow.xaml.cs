@@ -58,12 +58,31 @@ namespace MediaPlayer
             mediaList.Add(new Media("Media/3d_animation.mp4", 100000.5, img2));
             mediaList.Add(new Media("Media/3d_animation.mp4", 100000.5, img2));
             mediaList.Add(new Media("Media/Random - Sound Effect.mp4", 100000.5, img2));
+            mediaList.Add(new Media("Media/trunk-151808.mp3", 644000.45, img));
+            mediaList.Add(new Media("Media/street-food-112193.mp3", 644000.45, img));
+            mediaList.Add(new Media("Media/3d_animation.mp4", 100000.5, img2));
+            mediaList.Add(new Media("Media/3d_animation.mp4", 100000.5, img2));
+            mediaList.Add(new Media("Media/Random - Sound Effect.mp4", 100000.5, img2));
+            mediaList.Add(new Media("Media/trunk-151808.mp3", 644000.45, img));
+            mediaList.Add(new Media("Media/street-food-112193.mp3", 644000.45, img));
+            mediaList.Add(new Media("Media/3d_animation.mp4", 100000.5, img2));
+            mediaList.Add(new Media("Media/3d_animation.mp4", 100000.5, img2));
+            mediaList.Add(new Media("Media/Random - Sound Effect.mp4", 100000.5, img2));
 
             plListView.ItemsSource = mediaList;
         }
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             HotkeysManager.ShutdownSystemHook();
+        }
+
+        private void AddPresetButton_Click(object sender, RoutedEventArgs e)
+        {
+            var addButton = sender as FrameworkElement;
+            if (addButton != null)
+            {
+                addButton.ContextMenu.IsOpen = true;
+            }
         }
 
         private void plListView_SelectionChanged(Object sender, SelectionChangedEventArgs e)

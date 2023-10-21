@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MediaPlayer"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         Loaded="Window_Loaded" Closing="Window_Closing"
@@ -102,12 +103,37 @@
                                     Grid.Column="2" VerticalAlignment="Center" 
                                     HorizontalAlignment="Right"
                                     Style="{StaticResource TransparentDarkerStyle}">
+                                <Button.ContextMenu>
+                                    <ContextMenu x:Name="moreContextMenu" PlacementRectangle="{Binding RelativeSource={RelativeSource Self}}"
+                                                 Width="Auto">
+                                        <MenuItem Header="Remove" Foreground="#FF5E5E">
+                                            <MenuItem.Icon>
+                                                <Image Source="Images/trash.png" />
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                    </ContextMenu>
+                                </Button.ContextMenu>
                                 <Button.Resources>
                                     <Style TargetType="Border">
                                         <Setter Property="CornerRadius" Value="20"/>
                                     </Style>
                                 </Button.Resources>
                                 <Image Source="./Images/more.png" Width="24" Height="24" />
+                                <Button.Triggers>
+                                    <EventTrigger SourceName="moreButton" RoutedEvent="Button.Click">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="moreContextMenu" Storyboard.TargetProperty="(ContextMenu.IsOpen)">
+                                                    <DiscreteObjectKeyFrame KeyTime="0:0:0">
+                                                        <DiscreteObjectKeyFrame.Value>
+                                                            <sys:Boolean>True</sys:Boolean>
+                                                        </DiscreteObjectKeyFrame.Value>
+                                                    </DiscreteObjectKeyFrame>
+                                                </ObjectAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                </Button.Triggers>
                             </Button>
                         </Grid>
                     </DataTemplate>

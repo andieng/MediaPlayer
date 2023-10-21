@@ -36,6 +36,7 @@
     <None Remove="Images\right-arrow.png" />
     <None Remove="Images\shuffle-off.png" />
     <None Remove="Images\shuffle.png" />
+    <None Remove="Images\trash.png" />
     <None Remove="Images\white-arrow-transparent-png-22.png" />
     <None Remove="Images\white-left-arrow.png" />
     <None Remove="Images\white-right-arrow.png" />
@@ -92,6 +93,7 @@
     </Resource>
     <Resource Include="Images\shuffle-off.png" />
     <Resource Include="Images\shuffle.png" />
+    <Resource Include="Images\trash.png" />
   </ItemGroup>
 
   <ItemGroup>
