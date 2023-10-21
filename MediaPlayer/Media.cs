@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Graph.Models.CallRecords;
+using System;
 using System.ComponentModel;
 using System.IO;
 //using System.IO;
@@ -17,6 +18,7 @@ namespace MediaPlayer
         {
             get => Path.GetFileNameWithoutExtension(FilePath);
         }
+        public Uri Source { get; set; }
         public double Duration { get; set; }
         public string DurationString 
         { 
@@ -38,6 +40,7 @@ namespace MediaPlayer
             string projectDir = Directory.GetParent(workDir).Parent.Parent.FullName;
             Uri uri = new Uri($"{projectDir}/{previewImage}", UriKind.Absolute);
             this.PreviewImage = new BitmapImage(uri);
+            this.Source = new Uri(this.FilePath, UriKind.Absolute);
         }
     }
 }

@@ -30,11 +30,13 @@
                 <Button x:Name="importButton" Content="Import" Grid.Column="0" 
                         Width="64" Margin="6 0 0 0" Height="26"
                         FontWeight="SemiBold"
-                        Style="{StaticResource OutlineStyle}"/>
+                        Style="{StaticResource OutlineStyle}"
+						Click="importButton_Click"/>
                 <Button x:Name="saveButton" Content="Save" Grid.Column="1" 
                         Width="58" Height="26"
                         FontWeight="SemiBold"
-                        Style="{StaticResource FillStyle}" />
+                        Style="{StaticResource FillStyle}" 
+						Click="saveButton_Click"/>
                 <Button x:Name="hideButton" Width="36" Height="36"
                         Grid.Column="2" VerticalAlignment="Center" 
                         HorizontalAlignment="Right" Margin="0 0 10 0"
