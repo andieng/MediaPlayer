@@ -91,31 +91,28 @@ namespace MediaPlayer
 
                     if (fileExists)
                     {
+                        string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(selectedFilePath);
+                        string newFileName = fileNameWithoutExtension;
                         int index = 1;
-                        string newFilePath = selectedFilePath;
-
-                        while (mediaList.Any(media => media.FilePath == newFilePath))
+                        while (mediaList.Any(media => media.Name == newFileName))
                         {
-                            string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(selectedFilePath);
-                            string newFileName = $"{fileNameWithoutExtension} ({index}){extension}";
-                            newFilePath = Path.Combine(Path.GetDirectoryName(selectedFilePath), newFileName);
+                            newFileName = $"{fileNameWithoutExtension} ({index})";
                             index++;
                         }
 
                         if (extension == ".mp3" || extension == ".flac" || extension == ".ogg" || extension == ".wav")
                         {
-                            mediaList.Add(new Media(newFilePath, clip.duration, thumbnail_audio));
+                            mediaList.Add(new Media(selectedFilePath, newFileName, clip.duration, thumbnail_audio));
                         }
                         else if (extension == ".mp4" || extension == ".avi" || extension == ".mkv")
                         {
-                            mediaList.Add(new Media(newFilePath, clip.duration, thumbnail_video));
+                            mediaList.Add(new Media(selectedFilePath, newFileName, clip.duration, thumbnail_video));
                         }
                         else
                         {
                             // Xử lý ngoại lệ
                         }
-                    }
-                    else
+                    } else
                     {
                         if (extension == ".mp3" || extension == ".flac" || extension == ".ogg" || extension == ".wav")
                         {
@@ -170,7 +167,13 @@ namespace MediaPlayer
 
                 foreach (var media in mediaList)
                 {
-                    string fileName = Path.GetFileName(media.FilePath);
+                    string extension = Path.GetExtension(media?.FilePath);
+                    string fileNameWithoutExtension = media?.FileName;
+                    if (media?.FileName != media?.Name)
+                    {
+                        fileNameWithoutExtension = media?.Name;
+                    }
+                    string fileName = fileNameWithoutExtension + extension;
                     string filePath = Path.Combine(newFolderPath, fileName);
                     WebClient webClient = new WebClient();
                     try
