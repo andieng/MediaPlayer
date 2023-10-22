@@ -98,44 +98,25 @@
                                 </Border>
                             </Border>
                             <StackPanel Grid.Column="1" Margin="10 0 0 0" VerticalAlignment="Center">
-                                <TextBlock FontWeight="Medium" FontSize="14" Text="{Binding Name}" Margin="0 0 0 4" TextTrimming="CharacterEllipsis"  />
+                                <TextBlock FontWeight="Medium" FontSize="14" Text="{Binding Name}" Margin="0 0 0 4">
+                                    <TextBlock.ToolTip>
+                                        <ToolTip Content="{Binding Name}" />
+                                    </TextBlock.ToolTip>
+                                </TextBlock>
                                 <TextBlock FontSize="11" Text="{Binding DurationString}" TextTrimming="CharacterEllipsis" />
                             </StackPanel>
-                            <Button x:Name="moreButton" Width="30" Height="30"
+                            <Button x:Name="deleteButton" Click="deleteButton_Click" 
+                                    Tag="{Binding}"
+                                    Width="30" Height="30"
                                     Grid.Column="2" VerticalAlignment="Center" 
                                     HorizontalAlignment="Right"
                                     Style="{StaticResource TransparentDarkerStyle}">
-                                <Button.ContextMenu>
-                                    <ContextMenu x:Name="moreContextMenu" PlacementRectangle="{Binding RelativeSource={RelativeSource Self}}"
-                                                 Width="Auto">
-                                        <MenuItem Header="Remove" Foreground="#FF5E5E" Click="OnDeleteClick">
-                                            <MenuItem.Icon>
-                                                <Image Source="Images/trash.png" />
-                                            </MenuItem.Icon>
-                                        </MenuItem>
-                                    </ContextMenu>
-                                </Button.ContextMenu>
                                 <Button.Resources>
                                     <Style TargetType="Border">
                                         <Setter Property="CornerRadius" Value="20"/>
                                     </Style>
                                 </Button.Resources>
-                                <Image Source="./Images/more.png" Width="24" Height="24" />
-                                <Button.Triggers>
-                                    <EventTrigger SourceName="moreButton" RoutedEvent="Button.Click">
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="moreContextMenu" Storyboard.TargetProperty="(ContextMenu.IsOpen)">
-                                                    <DiscreteObjectKeyFrame KeyTime="0:0:0">
-                                                        <DiscreteObjectKeyFrame.Value>
-                                                            <sys:Boolean>True</sys:Boolean>
-                                                        </DiscreteObjectKeyFrame.Value>
-                                                    </DiscreteObjectKeyFrame>
-                                                </ObjectAnimationUsingKeyFrames>
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </EventTrigger>
-                                </Button.Triggers>
+                                <Image Source="./Images/trash.png" Width="17" Height="17" />
                             </Button>
                         </Grid>
                     </DataTemplate>
