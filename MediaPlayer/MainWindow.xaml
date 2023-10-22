@@ -98,7 +98,7 @@
                                 </Border>
                             </Border>
                             <StackPanel Grid.Column="1" Margin="10 0 0 0" VerticalAlignment="Center">
-                                <TextBlock FontWeight="Medium" FontSize="14" Text="{Binding Name}" Margin="0 0 0 4">
+                                <TextBlock FontWeight="Medium" FontSize="14" Text="{Binding Name}" Margin="0 0 0 4" TextTrimming="CharacterEllipsis">
                                     <TextBlock.ToolTip>
                                         <ToolTip Content="{Binding Name}" />
                                     </TextBlock.ToolTip>
