@@ -15,6 +15,7 @@ using System.Collections.ObjectModel;
 using Path = System.IO.Path;
 using System.Net;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using System.Windows.Media;
 
 namespace MediaPlayer
 {
@@ -29,6 +30,8 @@ namespace MediaPlayer
 
         string thumbnail_audio = "Images/musical-note-64x64.png";
         string thumbnail_video = "Images/film-64x64.png";
+
+        bool isDelete = false;
 
         public MainWindow()
         {
@@ -75,7 +78,7 @@ namespace MediaPlayer
 
             if (openFileDialog.ShowDialog() == true)
             {
-                string[] selectedFilePaths = openFileDialog.FileNames; 
+                string[] selectedFilePaths = openFileDialog.FileNames;
 
                 foreach (string selectedFilePath in selectedFilePaths)
                 {
@@ -86,7 +89,30 @@ namespace MediaPlayer
 
                     bool fileExists = mediaList.Any(media => media.FilePath == selectedFilePath);
 
-                    if (!fileExists)
+                    if (fileExists)
+                    {
+                        string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(selectedFilePath);
+                        string newFileName = fileNameWithoutExtension;
+                        int index = 1;
+                        while (mediaList.Any(media => media.Name == newFileName))
+                        {
+                            newFileName = $"{fileNameWithoutExtension} ({index})";
+                            index++;
+                        }
+
+                        if (extension == ".mp3" || extension == ".flac" || extension == ".ogg" || extension == ".wav")
+                        {
+                            mediaList.Add(new Media(selectedFilePath, newFileName, clip.duration, thumbnail_audio));
+                        }
+                        else if (extension == ".mp4" || extension == ".avi" || extension == ".mkv")
+                        {
+                            mediaList.Add(new Media(selectedFilePath, newFileName, clip.duration, thumbnail_video));
+                        }
+                        else
+                        {
+                            // Xử lý ngoại lệ
+                        }
+                    } else
                     {
                         if (extension == ".mp3" || extension == ".flac" || extension == ".ogg" || extension == ".wav")
                         {
@@ -101,17 +127,6 @@ namespace MediaPlayer
                             // Xử lý ngoại lệ
                         }
                     }
-                }
-            }
-        }
-
-        private void OnDeleteClick(object sender, RoutedEventArgs e)
-        {
-            if (sender is Button button)
-            {
-                if (button.Tag is Media media)
-                {
-                    mediaList.Remove(media);
                 }
             }
         }
@@ -152,7 +167,13 @@ namespace MediaPlayer
 
                 foreach (var media in mediaList)
                 {
-                    string fileName = Path.GetFileName(media.FilePath);
+                    string extension = Path.GetExtension(media?.FilePath);
+                    string fileNameWithoutExtension = media?.FileName;
+                    if (media?.FileName != media?.Name)
+                    {
+                        fileNameWithoutExtension = media?.Name;
+                    }
+                    string fileName = fileNameWithoutExtension + extension;
                     string filePath = Path.Combine(newFolderPath, fileName);
                     WebClient webClient = new WebClient();
                     try
@@ -456,6 +477,17 @@ namespace MediaPlayer
                 string workDir = AppDomain.CurrentDomain.BaseDirectory;
                 Uri uri = new Uri($"{workDir}/Images/shuffle-off.png", UriKind.Absolute);
                 shuffleButtonImageSource.Source = new BitmapImage(uri);
+            }
+        }
+
+        private void deleteButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button)
+            {
+                if (button.Tag is Media media)
+                {
+                    mediaList.Remove(media);
+                }
             }
         }
     }

@@ -11,10 +11,13 @@ namespace MediaPlayer
     {
         public string? FilePath { get; set; }
         public ImageSource? PreviewImage { get; set; }
-        public string? Name
+
+        public string? FileName 
         {
             get => Path.GetFileNameWithoutExtension(FilePath);
         }
+
+        public string? Name { get; set; }
         public string? Type
         {
             get
@@ -36,17 +39,22 @@ namespace MediaPlayer
             get => TimeSpan.FromSeconds(Duration).ToString(@"hh\:mm\:ss");
         }
 
-        public Media(string? filePath, double duration, ImageSource? previewImage)
-        {
-            this.FilePath = filePath;
-            this.Duration = duration;
-            this.PreviewImage = previewImage;
-        }
-
         public Media(string? filePath, double duration, string? previewImage)
         {
             this.FilePath = filePath;
+            this.Name = Path.GetFileNameWithoutExtension(FilePath);
             this.Duration = duration;
+            string workDir = AppDomain.CurrentDomain.BaseDirectory;
+            Uri uri = new Uri($"{workDir}/{previewImage}", UriKind.Absolute);
+            this.PreviewImage = new BitmapImage(uri);
+            this.Source = new Uri(this.FilePath, UriKind.Absolute);
+        }
+
+        public Media(string? filePath, string Name, double duration, string? previewImage)
+        {
+            this.FilePath = filePath;
+            this.Duration = duration;
+            this.Name = Name;
             string workDir = AppDomain.CurrentDomain.BaseDirectory;
             Uri uri = new Uri($"{workDir}/{previewImage}", UriKind.Absolute);
             this.PreviewImage = new BitmapImage(uri);
