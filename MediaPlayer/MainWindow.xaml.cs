@@ -33,6 +33,13 @@ namespace MediaPlayer
 
         bool isDelete = false;
 
+        public class MediaPlaybackInfo
+        {
+            public Media Media { get; set; }
+            public TimeSpan Position { get; set; }
+        }
+        private List<MediaPlaybackInfo> mediaPlaybackInfos = new List<MediaPlaybackInfo>();
+
         public MainWindow()
         {
             this.DataContext = this;
@@ -100,13 +107,29 @@ namespace MediaPlayer
                             index++;
                         }
 
+                        Media newMedia;
+
                         if (extension == ".mp3" || extension == ".flac" || extension == ".ogg" || extension == ".wav")
                         {
-                            mediaList.Add(new Media(selectedFilePath, newFileName, clip.duration, thumbnail_audio));
+                            newMedia = new Media(selectedFilePath, newFileName, clip.duration, thumbnail_audio);
+                            mediaList.Add(newMedia);
+
+                            mediaPlaybackInfos.Add(new MediaPlaybackInfo
+                            {
+                                Media = newMedia,
+                                Position = TimeSpan.Zero
+                            });
                         }
                         else if (extension == ".mp4" || extension == ".avi" || extension == ".mkv")
                         {
-                            mediaList.Add(new Media(selectedFilePath, newFileName, clip.duration, thumbnail_video));
+                            newMedia = new Media(selectedFilePath, newFileName, clip.duration, thumbnail_video);
+                            mediaList.Add(newMedia);
+
+                            mediaPlaybackInfos.Add(new MediaPlaybackInfo
+                            {
+                                Media = newMedia,
+                                Position = TimeSpan.Zero
+                            });
                         }
                         else
                         {
@@ -114,13 +137,29 @@ namespace MediaPlayer
                         }
                     } else
                     {
+                        Media newMedia;
+
                         if (extension == ".mp3" || extension == ".flac" || extension == ".ogg" || extension == ".wav")
                         {
-                            mediaList.Add(new Media(selectedFilePath, clip.duration, thumbnail_audio));
+                            newMedia = new Media(selectedFilePath, clip.duration, thumbnail_audio);
+                            mediaList.Add(newMedia);
+
+                            mediaPlaybackInfos.Add(new MediaPlaybackInfo
+                             {
+                                 Media = newMedia,
+                                 Position = TimeSpan.Zero
+                             });
                         }
                         else if (extension == ".mp4" || extension == ".avi" || extension == ".mkv")
                         {
-                            mediaList.Add(new Media(selectedFilePath, clip.duration, thumbnail_video));
+                            newMedia = new Media(selectedFilePath, clip.duration, thumbnail_video);
+                            mediaList.Add(newMedia);
+
+                            mediaPlaybackInfos.Add(new MediaPlaybackInfo
+                             {
+                                 Media = newMedia,
+                                 Position = TimeSpan.Zero
+                             });
                         }
                         else
                         {
@@ -261,14 +300,35 @@ namespace MediaPlayer
             
             if (currentMedia != null)
             {
+                foreach (var mediaInfo in mediaPlaybackInfos)
+                {
+                    if (mediaInfo.Media == currentMedia)
+                    {
+                        mediaInfo.Position = currentMediaElement.Position;
+                        break; 
+                    }
+                }
+
                 pauseMedia();
                 currentMediaElement.Close();
+
             } else
             {
                 hideWelcomeBackground();
             }
 
             currentMedia = (Media)plListView.SelectedItem;
+
+            MediaPlaybackInfo playbackInfo = new MediaPlaybackInfo();
+            foreach (var mediaInfo in mediaPlaybackInfos)
+            {
+                if (mediaInfo.Media == currentMedia)
+                {
+                    playbackInfo = mediaInfo;
+                    break;
+                }
+            }
+
             showMediaControl();
             if (currentMedia?.Type == "music")
             {
@@ -286,7 +346,7 @@ namespace MediaPlayer
                 currentMediaElement.Source = new Uri(currentMedia?.FilePath, UriKind.Relative);
                 if (currentMediaElement.Source != null)
                 {
-                    handleMedia();
+                    handleMedia(playbackInfo);
                 }
             }
         }
@@ -374,10 +434,10 @@ namespace MediaPlayer
             }
         }
 
-        private void handleMedia()
+        private void handleMedia(MediaPlaybackInfo playbackInfo = null)
         {
             currentMediaElement?.Play();
-            playMedia();
+            playMedia(playbackInfo);
         }
 
         private void playMediaButton_Click(object sender, RoutedEventArgs e)
@@ -433,9 +493,15 @@ namespace MediaPlayer
             }
         }
 
-        private void playMedia()
+        private void playMedia(MediaPlaybackInfo playbackInfo = null)
         {
             string workDir = AppDomain.CurrentDomain.BaseDirectory;
+
+            if (playbackInfo != null && playbackInfo.Position > TimeSpan.Zero)
+            {
+                currentMediaElement.Position = playbackInfo.Position;
+            }
+
             currentMediaElement?.Play();
             isPlayingMedia = true;
             Uri uri = new Uri($"{workDir}/Images/pause.png", UriKind.Absolute);
@@ -492,6 +558,14 @@ namespace MediaPlayer
                 if (button.Tag is Media media)
                 {
                     mediaList.Remove(media);
+
+                    foreach (var mediaInfo in mediaPlaybackInfos.ToList())
+                    {
+                        if (mediaInfo.Media == media)
+                        {
+                            mediaPlaybackInfos.Remove(mediaInfo);
+                        }
+                    }
                 }
             }
         }
