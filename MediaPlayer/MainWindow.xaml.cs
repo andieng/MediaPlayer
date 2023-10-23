@@ -110,7 +110,7 @@ namespace MediaPlayer
                         }
                         else
                         {
-                            // Xử lý ngoại lệ
+                            throw new ArgumentException("Invalid file", nameof(extension));
                         }
                     } else
                     {
@@ -124,7 +124,7 @@ namespace MediaPlayer
                         }
                         else
                         {
-                            // Xử lý ngoại lệ
+                            throw new ArgumentException("Invalid file", nameof(extension));
                         }
                     }
                 }
@@ -212,7 +212,7 @@ namespace MediaPlayer
                         }
                         else
                         {
-                            // Xử lý ngoại lệ
+                            throw new ArgumentException("Invalid file", nameof(extension));
                         }
                     }
                 }
@@ -254,6 +254,11 @@ namespace MediaPlayer
 
         private void plListView_SelectionChanged(Object sender, SelectionChangedEventArgs e)
         {
+            if (plListView.SelectedIndex < 0)
+            {
+                return;
+            }
+            
             if (currentMedia != null)
             {
                 pauseMedia();
@@ -265,7 +270,7 @@ namespace MediaPlayer
 
             currentMedia = (Media)plListView.SelectedItem;
             showMediaControl();
-            if (currentMedia.Type == "music")
+            if (currentMedia?.Type == "music")
             {
                 hideVideoBackground();
                 showMusicBackground();
@@ -276,10 +281,13 @@ namespace MediaPlayer
                 showVideoBackground();
             }
 
-            currentMediaElement.Source = new Uri(currentMedia?.FilePath, UriKind.Relative);
-            if (currentMediaElement.Source != null)
+            if (currentMedia?.FilePath != null)
             {
-                handleMedia();
+                currentMediaElement.Source = new Uri(currentMedia?.FilePath, UriKind.Relative);
+                if (currentMediaElement.Source != null)
+                {
+                    handleMedia();
+                }
             }
         }
 
@@ -316,7 +324,7 @@ namespace MediaPlayer
         {
             currentMediaElement.Visibility = Visibility.Visible;
             mediaControl.Visibility = Visibility.Visible;
-            mediaNameTextBlock.Text = currentMedia.Name; 
+            mediaNameTextBlock.Text = currentMedia?.Name; 
         }
 
         private void currentMediaElement_MediaEnded(object sender, RoutedEventArgs e)
@@ -351,7 +359,7 @@ namespace MediaPlayer
 
             // Create a timer that will update the counters and the time slider
             timerVideoTime = new DispatcherTimer();
-            timerVideoTime.Interval = TimeSpan.FromSeconds(0.5);
+            timerVideoTime.Interval = TimeSpan.FromSeconds(0.05);
             timerVideoTime.Tick += new EventHandler(timerTick);
             timerVideoTime.Start();
         }
@@ -360,12 +368,9 @@ namespace MediaPlayer
         {
             if (totalTime.TotalSeconds > 0)
             {
-                if (totalTime.TotalSeconds > 0)
-                {
-                    // Updating time slider
-                    timelineSlider.Value = currentMediaElement.Position.TotalSeconds /
-                                       totalTime.TotalSeconds;
-                }
+                // Updating time slider
+                timelineSlider.Value = currentMediaElement.Position.TotalSeconds /
+                                   totalTime.TotalSeconds;
             }
         }
 
