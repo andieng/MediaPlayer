@@ -11,24 +11,27 @@ namespace MediaPlayer
     {
         public string? FilePath { get; set; }
         public ImageSource? PreviewImage { get; set; }
-
         public string? FileName 
         {
             get => Path.GetFileNameWithoutExtension(FilePath);
-        }
-
+        }    
         public string? Name { get; set; }
         public string? Type
         {
             get
             {
-                if (Path.GetExtension(FilePath) == ".mp4")
-                {
+                string extension = Path.GetExtension(FilePath);
+                if (extension == ".mp4" || extension == ".avi" || extension == ".mkv")
+                { 
                     return "video";
                 } 
-                else
+                else if (extension == ".mp3" || extension == ".flac" || extension == ".ogg" || extension == ".wav")
                 {
                     return "music";
+                }
+                else
+                {
+                    throw new ArgumentException("Invalid file", nameof(extension));
                 }
             }
         }
