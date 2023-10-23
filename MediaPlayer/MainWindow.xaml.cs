@@ -129,6 +129,7 @@ namespace MediaPlayer
                     }
                 }
             }
+            saveButtonCheck();
         }
 
         private void saveButton_Click(object sender, RoutedEventArgs e)
@@ -235,6 +236,7 @@ namespace MediaPlayer
                 string selectedFolderPath = folderDialog.FileName;
                 string[] files = Directory.GetFiles(selectedFolderPath, "*", SearchOption.AllDirectories);
                 addListPathFile(files);
+                saveButtonCheck();
             }
         }
 
@@ -253,12 +255,7 @@ namespace MediaPlayer
         }
 
         private void plListView_SelectionChanged(Object sender, SelectionChangedEventArgs e)
-        {
-            if (plListView.SelectedIndex < 0)
-            {
-                return;
-            }
-            
+        {            
             if (currentMedia != null)
             {
                 pauseMedia();
@@ -269,13 +266,21 @@ namespace MediaPlayer
             }
 
             currentMedia = (Media)plListView.SelectedItem;
+            if (currentMedia == null)
+            {
+                hideMediaControl();
+                hideVideoBackground();
+                hideMusicBackground();
+                showWelcomeBackground();
+                return;
+            }
             showMediaControl();
             if (currentMedia?.Type == "music")
             {
                 hideVideoBackground();
                 showMusicBackground();
             }
-            else
+            else if (currentMedia?.Type == "video")
             {
                 hideMusicBackground();
                 showVideoBackground();
@@ -296,6 +301,13 @@ namespace MediaPlayer
             waitingBackground.Visibility = Visibility.Hidden;
             welcomeTextBlock.Visibility = Visibility.Hidden;
             guideTextBlock.Visibility = Visibility.Hidden;
+        }
+
+        private void showWelcomeBackground()
+        {
+            waitingBackground.Visibility = Visibility.Visible;
+            welcomeTextBlock.Visibility = Visibility.Visible;
+            guideTextBlock.Visibility = Visibility.Visible;
         }
 
         private void showMusicBackground()
@@ -325,6 +337,13 @@ namespace MediaPlayer
             currentMediaElement.Visibility = Visibility.Visible;
             mediaControl.Visibility = Visibility.Visible;
             mediaNameTextBlock.Text = currentMedia?.Name; 
+        }
+
+        private void hideMediaControl()
+        {
+            currentMediaElement.Visibility = Visibility.Hidden;
+            mediaControl.Visibility = Visibility.Hidden;
+            mediaNameTextBlock.Text = "";
         }
 
         private void currentMediaElement_MediaEnded(object sender, RoutedEventArgs e)
@@ -485,6 +504,17 @@ namespace MediaPlayer
             }
         }
 
+        private void saveButtonCheck()
+        {
+            if (mediaList.Count > 0)
+            {
+                saveButton.IsEnabled = true;
+            } else
+            {
+                saveButton.IsEnabled = false;
+            }
+        }
+
         private void deleteButton_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button button)
@@ -492,6 +522,7 @@ namespace MediaPlayer
                 if (button.Tag is Media media)
                 {
                     mediaList.Remove(media);
+                    saveButtonCheck();
                 }
             }
         }
