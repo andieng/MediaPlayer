@@ -37,8 +37,8 @@
                         Width="58" Height="26"
                         FontWeight="SemiBold"
                         Style="{StaticResource FillStyle}" 
-						Click="saveButton_Click"/>
-                <Button x:Name="hideButton" Width="36" Height="36"
+						Click="saveButton_Click" />
+                <!--<Button x:Name="hideButton" Width="36" Height="36"
                         Grid.Column="2" VerticalAlignment="Center" 
                         HorizontalAlignment="Right" Margin="0 0 10 0"
                         Style="{StaticResource TransparentStyle}">
@@ -48,7 +48,7 @@
                         </Style>
                     </Button.Resources>
                     <Image Source="./Images/left-arrow.png" Width="16" Height="16" />
-                </Button>
+                </Button>-->
             </Grid>
             <Separator Foreground="#FFF3F3F3" Height="0.2" Grid.Row="1" />
             <Grid Margin="14,0,0,0" Grid.Row="2">
