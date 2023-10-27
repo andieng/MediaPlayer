@@ -14,54 +14,72 @@
         Title="PATE Media Player" Height="650" Width="1000">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="280" />
+            <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-        <Grid Grid.Column="0">
+
+        <!--Left tab - Playlist-->
+        <Grid Grid.Column="0" x:Name="playlistTab" Width="280">
             <Grid.RowDefinitions>
                 <RowDefinition Height="50" />
                 <RowDefinition Height="6" />
                 <RowDefinition Height="56" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="10" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
+            
+            <!--Import & Save buttons-->
             <Grid VerticalAlignment="Center" Height="50" Grid.Row="0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="88" />
                     <ColumnDefinition Width="66" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
+
+                <!--Import button-->
                 <Button x:Name="importButton" Content="Import" Grid.Column="0" 
                         Width="64" Margin="6 0 0 0" Height="26"
                         FontWeight="SemiBold"
                         Style="{StaticResource OutlineStyle}"
 						Click="importButton_Click"/>
+
+                <!--Save button-->
                 <Button x:Name="saveButton" Content="Save" Grid.Column="1" 
                         Width="58" Height="26"
                         FontWeight="SemiBold"
                         Style="{StaticResource FillStyle}" 
 						Click="saveButton_Click" />
-                <!--<Button x:Name="hideButton" Width="36" Height="36"
+                
+                <!--Hide playlist button-->
+                <Button x:Name="hidePlaylistButton" Width="34" Height="34"
                         Grid.Column="2" VerticalAlignment="Center" 
-                        HorizontalAlignment="Right" Margin="0 0 10 0"
+                        HorizontalAlignment="Right" Margin="0 0 11 0"
+                        Click="hidePlaylistButton_Click"
                         Style="{StaticResource TransparentStyle}">
                     <Button.Resources>
                         <Style TargetType="Border">
-                            <Setter Property="CornerRadius" Value="20"/>
+                            <Setter Property="CornerRadius" Value="22"/>
                         </Style>
                     </Button.Resources>
-                    <Image Source="./Images/left-arrow.png" Width="16" Height="16" />
-                </Button>-->
+                    <Image Source="./Images/left-arrow.png" Width="14" Height="14" />
+                </Button>
             </Grid>
             <Separator Foreground="#FFF3F3F3" Height="0.2" Grid.Row="1" />
+            
+            <!--Playlist title-->
             <Grid Margin="14,0,0,0" Grid.Row="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="30" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="46" />
                 </Grid.ColumnDefinitions>
+                <!--App icon-->
                 <Image Grid.Column="0" Source="./Images/icon-128x128.png" Width="28" Height="28" />
+                <!--Title-->
                 <TextBlock Grid.Column="1" Text="Playlist" FontSize="22"
                            FontWeight="Bold" Margin="12 0 0 0" VerticalAlignment="Center" />
+                <!--Add media button-->
                 <Button x:Name="addButton" Click="addButton_Click" Width="26" Height="26"
                         Grid.Column="2" Margin="0 0 10 0"
                         Style="{StaticResource NoHoverStyle}">
@@ -79,7 +97,79 @@
                     </Image>
                 </Button>
             </Grid>
-            <ListView x:Name="plListView" Grid.Row="3" 
+
+            <!--Recent media-->
+            <Grid Grid.Row="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="46" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <!--Recent media title-->
+                <TextBlock Grid.Column="0" Grid.Row="0" Text="Recent media" Margin="14 0 0 0" FontSize="18"
+                           FontWeight="Medium" VerticalAlignment="Center" />
+
+                <!--Toggle recent media button (hide/show recent media)-->
+                <Button x:Name="toggleRecentButton" Width="34" Height="34"
+                        Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" 
+                        HorizontalAlignment="Right" Margin="0 0 11 0"
+                        Click="toggleRecentButton_Click"
+                        Style="{StaticResource TransparentStyle}">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="22"/>
+                        </Style>
+                    </Button.Resources>
+                    <Image x:Name="toggleRecentButtonImageSource" Source="./Images/bottom-arrow.png" Width="14" Height="14" />
+                </Button>
+
+                <!--Recent media list view-->
+                <ListView x:Name="recentListView" Grid.Row="1" Grid.ColumnSpan="2"
+                      Margin="6,0,6,2" BorderThickness="0" Visibility="Collapsed"
+                      ItemContainerStyle="{StaticResource ListViewTransparentStyle}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="5,5,5,5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="50" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <!--Media's preview image-->
+                                <Border Grid.Column="0" CornerRadius="20" Width="50" Height="50" Background="#FFF6F6F6">
+                                    <Border Width="22" Height="22">
+                                        <Border.Background>
+                                            <ImageBrush Stretch="Fill" ImageSource="{Binding PreviewImage}" />
+                                        </Border.Background>
+                                    </Border>
+                                </Border>
+
+                                <!--Media's info-->
+                                <StackPanel Grid.Column="1" Margin="10 0 0 0" VerticalAlignment="Center">
+                                    <!--Media's name-->
+                                    <TextBlock FontWeight="Medium" FontSize="14" Text="{Binding Name}" Margin="0 0 0 4" TextTrimming="CharacterEllipsis">
+                                        <TextBlock.ToolTip>
+                                            <ToolTip Content="{Binding Name}" />
+                                        </TextBlock.ToolTip>
+                                    </TextBlock>
+                                    <!--Media's duration-->
+                                    <TextBlock FontSize="11" Text="{Binding DurationString}" TextTrimming="CharacterEllipsis" />
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
+
+            <Separator Foreground="#FFF3F3F3" Height="0.2" Grid.Row="4"
+                           Margin="12,4,18,0" VerticalAlignment="Center" />
+
+            <!--Media list view-->
+            <ListView x:Name="plListView" Grid.Row="5" 
                       Margin="6,4,6,20" BorderThickness="0"
                       ItemContainerStyle="{StaticResource ListViewTransparentStyle}"
                       SelectionChanged="plListView_SelectionChanged">
@@ -91,7 +181,8 @@
                                 <ColumnDefinition Width="156" />
                                 <ColumnDefinition Width="30" />
                             </Grid.ColumnDefinitions>
-
+                            
+                            <!--Media's preview image-->
                             <Border Grid.Column="0" CornerRadius="20" Width="50" Height="50" Background="#FFF6F6F6">
                                 <Border Width="22" Height="22">
                                     <Border.Background>
@@ -99,14 +190,20 @@
                                     </Border.Background>
                                 </Border>
                             </Border>
+                            
+                            <!--Media's info-->
                             <StackPanel Grid.Column="1" Margin="10 0 0 0" VerticalAlignment="Center">
+                                <!--Media's name-->
                                 <TextBlock FontWeight="Medium" FontSize="14" Text="{Binding Name}" Margin="0 0 0 4" TextTrimming="CharacterEllipsis">
                                     <TextBlock.ToolTip>
                                         <ToolTip Content="{Binding Name}" />
                                     </TextBlock.ToolTip>
                                 </TextBlock>
+                                <!--Media's duration-->
                                 <TextBlock FontSize="11" Text="{Binding DurationString}" TextTrimming="CharacterEllipsis" />
                             </StackPanel>
+                            
+                            <!--Remove media button-->
                             <Button x:Name="deleteButton" Click="deleteButton_Click" 
                                     Tag="{Binding}"
                                     Width="30" Height="30"
@@ -125,7 +222,31 @@
                 </ListView.ItemTemplate>
             </ListView>
         </Grid>
-        <Grid Grid.Column="1">
+        
+        <!--Temporary tab when playlist tab is hidden-->
+        <Grid x:Name="playlistTempTab" Grid.Column="0" Width="55" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!--Show playlist button-->
+            <Button x:Name="showPlaylistButton" Width="34" Height="34"
+                        Grid.Row="0" VerticalAlignment="Center" 
+                        HorizontalAlignment="Right" Margin="0 0 11 0"
+                        Click="showPlaylistButton_Click"
+                        Style="{StaticResource TransparentStyle}">
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="22"/>
+                    </Style>
+                </Button.Resources>
+                <Image Source="./Images/right-arrow.png" Width="14" Height="14" />
+            </Button>
+        </Grid>
+        
+        <!--Right tab - Media tab-->
+        <Grid Grid.Column="1" x:Name="mediaTab">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="85" />
@@ -186,6 +307,7 @@
                 <!--Control buttons-->
                 <StackPanel Grid.Column="1" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center"
                             Orientation="Horizontal" Margin="0,0,0,8">
+                    <!--Back to previous media button-->
                     <Button x:Name="backMediaButton" Width="44" Height="44"
                             Margin="10 0 10 0" Click="backMediaButton_Click"
                             Style="{StaticResource MediaControlStyle}" >
@@ -196,6 +318,7 @@
                         </Button.Resources>
                         <Image Source="./Images/back.png" Width="20" Height="20" />
                     </Button>
+                    <!--Play current media button-->
                     <Button x:Name="playMediaButton" Width="48" Height="48"
                             Click="playMediaButton_Click"
                             Style="{StaticResource MediaPlayControlStyle}" >
@@ -206,6 +329,7 @@
                         </Button.Resources>
                         <Image x:Name="playMediaButtonImageSource" Source="./Images/play.png" Width="22" Height="22" Margin="2 0 0 0" />
                     </Button>
+                    <!--Go to next media button-->
                     <Button x:Name="nextMediaButton" Width="44" Height="44"
                             Margin="10 0 10 0" Click="nextMediaButton_Click"
                             Style="{StaticResource MediaControlStyle}" >
@@ -217,7 +341,8 @@
                         <Image Source="./Images/next.png" Width="20" Height="20" />
                     </Button>
                 </StackPanel>
-
+                
+                <!--App settings-->
                 <StackPanel Grid.Column="2" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Center" Orientation="Horizontal">
                     <Button x:Name="shuffleButton" Width="44" Height="44"
                             Margin="10 0 10 8" Click="shuffleButton_Click"

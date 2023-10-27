@@ -11,6 +11,7 @@
     <None Remove="Images\add-fill.png" />
     <None Remove="Images\add.png" />
     <None Remove="Images\back.png" />
+    <None Remove="Images\bottom-arrow.png" />
     <None Remove="Images\film-128x128.png" />
     <None Remove="Images\film-64x64.png" />
     <None Remove="Images\icon-128x128.png" />
@@ -26,6 +27,7 @@
     <None Remove="Images\right-arrow.png" />
     <None Remove="Images\shuffle-off.png" />
     <None Remove="Images\shuffle.png" />
+    <None Remove="Images\top-arrow.png" />
     <None Remove="Images\trash.png" />
   </ItemGroup>
 
@@ -56,6 +58,7 @@
     <Resource Include="Images\back.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Images\bottom-arrow.png" />
     <Resource Include="Images\film-64x64.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
@@ -97,6 +100,7 @@
     </Resource>
     <Resource Include="Images\shuffle-off.png" />
     <Resource Include="Images\shuffle.png" />
+    <Resource Include="Images\top-arrow.png" />
     <Resource Include="Images\trash.png" />
   </ItemGroup>
 </Project>

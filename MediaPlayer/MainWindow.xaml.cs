@@ -28,6 +28,7 @@ namespace MediaPlayer
         private DispatcherTimer timerVideoTime;
         private TimeSpan totalTime;
         private ObservableCollection<Media> mediaList = new ObservableCollection<Media>();
+        private ObservableCollection<Media> recentMediaList = new ObservableCollection<Media>();
 
         string thumbnail_audio = "Images/musical-note-64x64.png";
         string thumbnail_video = "Images/film-64x64.png";
@@ -69,11 +70,16 @@ namespace MediaPlayer
             string currentDir = AppDomain.CurrentDomain.BaseDirectory;
             mediaList.Add(new Media(currentDir + "cruel-summer1.mp3", 644000.45, thumbnail_audio));
             mediaList.Add(new Media(currentDir + "cruel-summer2.mp3", 100, thumbnail_video));
+            mediaList.Add(new Media(currentDir + "cruel-summer3.mp3", 644000.45, thumbnail_audio));
+            mediaList.Add(new Media(currentDir + "cruel-summer4.mp3", 100, thumbnail_video));
+            mediaList.Add(new Media(currentDir + "cruel-summer5.mp3", 644000.45, thumbnail_audio));
+            mediaList.Add(new Media(currentDir + "cruel-summer6.mp3", 100, thumbnail_video));
             if (mediaList.Count == 0)
             {
                 saveButton.IsEnabled = false;
             }
             plListView.ItemsSource = mediaList;
+            recentListView.ItemsSource = recentMediaList;
 
             slider.Width = ActualWidth - 300;
         }
@@ -304,11 +310,13 @@ namespace MediaPlayer
 
         private void plListView_SelectionChanged(Object sender, SelectionChangedEventArgs e)
         {   
+            // This happens after removing a selected item
             if (plListView.SelectedIndex < 0)
             {
                 return;
             }
             
+            // If user has chosen media before
             if (currentMedia != null)
             {
                 foreach (var mediaInfo in mediaPlaybackInfos)
@@ -320,14 +328,31 @@ namespace MediaPlayer
                     }
                 }
 
+                // Stop and close it
                 pauseMedia();
                 currentMediaElement.Close();
-            } else
-            {
+            } 
+            // If not
+            else
+            {   
                 hideWelcomeBackground();
             }
 
             currentMedia = (Media)plListView.SelectedItem;
+
+            // If the selected item is null
+            if (currentMedia == null)
+            {
+               // Hide UI for playing media, show welcome background
+               // and return
+                hideMediaControl();
+                hideVideoBackground();
+                hideMusicBackground();
+                showWelcomeBackground();
+                return;
+            }
+
+            updateRecentMedia(currentMedia);
 
             MediaPlaybackInfo playbackInfo = new MediaPlaybackInfo();
             foreach (var mediaInfo in mediaPlaybackInfos)
@@ -337,15 +362,6 @@ namespace MediaPlayer
                     playbackInfo = mediaInfo;
                     break;
                 }
-            }
-
-            if (currentMedia == null)
-            {
-                hideMediaControl();
-                hideVideoBackground();
-                hideMusicBackground();
-                showWelcomeBackground();
-                return;
             }
 
             showMediaControl();
@@ -368,6 +384,58 @@ namespace MediaPlayer
                     handleMedia(playbackInfo);
                 }
             }
+        }
+
+        private bool updateRecentMedia(Media media)
+        {
+            if (media == null)
+            {
+                return false;
+            }
+            bool isContained = recentMediaList.Contains(media);
+            int i = recentMediaList.IndexOf(media);
+
+            if (isContained)
+            {
+                recentMediaList.Remove(media);
+                recentMediaList.Insert(0, media);
+            } else 
+            {
+                if (recentMediaList.Count == 3)
+                {
+                    recentMediaList.RemoveAt(recentMediaList.Count - 1);
+                }
+                recentMediaList.Insert(0, media);
+            }
+
+
+            //// If list reachs limit (3 media)
+            //if (recentMediaList.Count == 3)
+            //{
+            //    // If media is already in the list
+            //    if (isContained)
+            //    {
+            //        // Remove it from list
+            //        recentMediaList.Remove(media);
+            //    }
+            //    // If not in the list
+            //    else
+            //    {
+            //        // Remove the last media from list
+            //        recentMediaList.RemoveAt(recentMediaList.Count - 1);
+            //    }
+
+            //    // Add media to the first position
+            //    recentMediaList.Add(media);
+            //}
+            //// If list has not reached limit yet
+            //// and media is not in the list
+            //else if (!isContained)
+            //{
+            //    recentMediaList.Add(media);
+            //}
+
+            return true;
         }
 
         private void hideWelcomeBackground()
@@ -698,6 +766,38 @@ namespace MediaPlayer
 
             drawingContext.Close();
             slider.Source = new DrawingImage(drawingVisual.Drawing);
+        }
+
+        private void hidePlaylistButton_Click(object sender, RoutedEventArgs e)
+        {
+            playlistTab.Visibility = Visibility.Collapsed;
+            playlistTempTab.Visibility = Visibility.Visible;
+        }
+
+        private void showPlaylistButton_Click(object sender, RoutedEventArgs e)
+        {
+            playlistTempTab.Visibility = Visibility.Collapsed;
+            playlistTab.Visibility = Visibility.Visible;
+        }
+
+        private void toggleRecentButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (recentListView.Visibility == Visibility.Visible)
+            {
+                recentListView.Visibility = Visibility.Collapsed;
+                toggleRecentButtonImageSource.Source = stringToImageSource("Images/bottom-arrow.png");
+            } else
+            {
+                recentListView.Visibility = Visibility.Visible;
+                toggleRecentButtonImageSource.Source = stringToImageSource("Images/top-arrow.png");
+            }
+        }
+
+        private ImageSource stringToImageSource(string relativeFilePath)
+        {
+            string workDir = AppDomain.CurrentDomain.BaseDirectory;
+            Uri uri = new Uri($"{workDir}/{relativeFilePath}", UriKind.Absolute);
+            return new BitmapImage(uri);
         }
     }
 }
