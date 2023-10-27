@@ -107,6 +107,10 @@
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="#FFD72C64"/>
                 </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Background" Value="#99D72C64"/>
+                    <Setter Property="Foreground" Value="#99FFFFFF"/>
+                </Trigger>
             </Style.Triggers>
         </Style>
         <Style x:Key="OutlineStyle" TargetType="{x:Type Button}">
