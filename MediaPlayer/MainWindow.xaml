@@ -7,7 +7,9 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Loaded="Window_Loaded" Closing="Window_Closing"
+        Loaded="Window_Loaded" 
+        Closing="Window_Closing"
+        SizeChanged="Window_SizeChanged"
         Icon="./Images/icon.png"
         Title="PATE Media Player" Height="650" Width="1000">
     <Grid>
@@ -128,7 +130,7 @@
                 <RowDefinition Height="*" />
                 <RowDefinition Height="80" />
             </Grid.RowDefinitions>
-            
+
             <!--Waiting for media settings-->
             <Rectangle x:Name="waitingBackground" Grid.Row="0" Grid.RowSpan="2" Fill="#FFFAA1BB" Visibility="Visible" />
             <TextBlock x:Name="welcomeTextBlock" Grid.Row="0" Grid.RowSpan="2" Text="Welcome to PATE Media Player ~"
@@ -148,13 +150,13 @@
 
             <!--Video media settings-->
             <Rectangle x:Name="videoMediaBackground" Grid.Row="0" Fill="#000" Visibility="Hidden" />
-            
+
             <!--Media-->
             <MediaElement x:Name="currentMediaElement" Grid.Row="0" LoadedBehavior="Manual" UnloadedBehavior="Manual"
                           Visibility="Hidden" ScrubbingEnabled="True" MediaEnded="currentMediaElement_MediaEnded"
                           MediaOpened="currentMediaElement_MediaOpened" />
-            
-            <!--Media control--> 
+
+            <!--Media control-->
             <Grid x:Name="mediaControl" Grid.Row="1" Background="#000" Opacity="0.8" Visibility="Hidden">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="10" />
@@ -165,15 +167,26 @@
                     <ColumnDefinition Width="160" />
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                
+
                 <!--Timeline slider-->
-                <Slider x:Name="timelineSlider" Margin="5 0 5 0" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3"
+                <!--<Slider x:Name="timelineSlider" Margin="5 0 5 -5" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3"
                         Maximum="1"/>
+                <ProgressBar Height="2.5" Margin="10 9 10 0" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" 
+                             Maximum="100" Minimum="0" Value="100" Foreground="#d01273"/>-->
+                <Image x:Name="slider" Margin="5 0 5 -5" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3"
+                       HorizontalAlignment="Center" 
+                       Height="26"
+                       VerticalAlignment="Top"
+                       Cursor="Hand"
+                       Loaded="Slider_Loaded"
+                       MouseDown="slider_MouseDown"
+                       MouseMove="slider_MouseMove"
+                       MouseUp="slider_MouseUp"/>
 
                 <!--Media name-->
                 <TextBlock x:Name="mediaNameTextBlock" Grid.Column="0" Grid.Row="1" FontSize="18" Foreground='#fff' 
                            VerticalAlignment="Center" Margin="20 0 20 0" TextTrimming="CharacterEllipsis" />
-                
+
                 <!--Control buttons-->
                 <StackPanel Grid.Column="1" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal">
                     <Button x:Name="backMediaButton" Width="44" Height="44"

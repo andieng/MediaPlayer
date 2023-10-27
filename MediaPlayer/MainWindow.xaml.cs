@@ -16,6 +16,7 @@ using Path = System.IO.Path;
 using System.Net;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Windows.Media;
+using System.Drawing.Drawing2D;
 
 namespace MediaPlayer
 {
@@ -32,6 +33,13 @@ namespace MediaPlayer
         string thumbnail_video = "Images/film-64x64.png";
 
         bool isDelete = false;
+
+        public class MediaPlaybackInfo
+        {
+            public Media Media { get; set; }
+            public TimeSpan Position { get; set; }
+        }
+        private List<MediaPlaybackInfo> mediaPlaybackInfos = new List<MediaPlaybackInfo>();
 
         public MainWindow()
         {
@@ -66,6 +74,14 @@ namespace MediaPlayer
                 saveButton.IsEnabled = false;
             }
             plListView.ItemsSource = mediaList;
+
+            slider.Width = ActualWidth - 300;
+        }
+
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            slider.Width = ActualWidth - 300;
+            drawPlaybackTimeline();
         }
 
         private void addButton_Click(object sender, RoutedEventArgs e)
@@ -100,13 +116,29 @@ namespace MediaPlayer
                             index++;
                         }
 
+                        Media newMedia;
+
                         if (extension == ".mp3" || extension == ".flac" || extension == ".ogg" || extension == ".wav")
                         {
-                            mediaList.Add(new Media(selectedFilePath, newFileName, clip.duration, thumbnail_audio));
+                            newMedia = new Media(selectedFilePath, newFileName, clip.duration, thumbnail_audio);
+                            mediaList.Add(newMedia);
+
+                            mediaPlaybackInfos.Add(new MediaPlaybackInfo
+                            {
+                                Media = newMedia,
+                                Position = TimeSpan.Zero
+                            });
                         }
                         else if (extension == ".mp4" || extension == ".avi" || extension == ".mkv")
                         {
-                            mediaList.Add(new Media(selectedFilePath, newFileName, clip.duration, thumbnail_video));
+                            newMedia = new Media(selectedFilePath, newFileName, clip.duration, thumbnail_video);
+                            mediaList.Add(newMedia);
+
+                            mediaPlaybackInfos.Add(new MediaPlaybackInfo
+                            {
+                                Media = newMedia,
+                                Position = TimeSpan.Zero
+                            });
                         }
                         else
                         {
@@ -114,13 +146,29 @@ namespace MediaPlayer
                         }
                     } else
                     {
+                        Media newMedia;
+
                         if (extension == ".mp3" || extension == ".flac" || extension == ".ogg" || extension == ".wav")
                         {
-                            mediaList.Add(new Media(selectedFilePath, clip.duration, thumbnail_audio));
+                            newMedia = new Media(selectedFilePath, clip.duration, thumbnail_audio);
+                            mediaList.Add(newMedia);
+
+                            mediaPlaybackInfos.Add(new MediaPlaybackInfo
+                            {
+                                 Media = newMedia,
+                                 Position = TimeSpan.Zero
+                            });
                         }
                         else if (extension == ".mp4" || extension == ".avi" || extension == ".mkv")
                         {
-                            mediaList.Add(new Media(selectedFilePath, clip.duration, thumbnail_video));
+                            newMedia = new Media(selectedFilePath, clip.duration, thumbnail_video);
+                            mediaList.Add(newMedia);
+
+                            mediaPlaybackInfos.Add(new MediaPlaybackInfo
+                             {
+                                 Media = newMedia,
+                                 Position = TimeSpan.Zero
+                             });
                         }
                         else
                         {
@@ -255,9 +303,23 @@ namespace MediaPlayer
         }
 
         private void plListView_SelectionChanged(Object sender, SelectionChangedEventArgs e)
-        {            
+        {   
+            if (plListView.SelectedIndex < 0)
+            {
+                return;
+            }
+            
             if (currentMedia != null)
             {
+                foreach (var mediaInfo in mediaPlaybackInfos)
+                {
+                    if (mediaInfo.Media == currentMedia)
+                    {
+                        mediaInfo.Position = currentMediaElement.Position;
+                        break; 
+                    }
+                }
+
                 pauseMedia();
                 currentMediaElement.Close();
             } else
@@ -266,6 +328,17 @@ namespace MediaPlayer
             }
 
             currentMedia = (Media)plListView.SelectedItem;
+
+            MediaPlaybackInfo playbackInfo = new MediaPlaybackInfo();
+            foreach (var mediaInfo in mediaPlaybackInfos)
+            {
+                if (mediaInfo.Media == currentMedia)
+                {
+                    playbackInfo = mediaInfo;
+                    break;
+                }
+            }
+
             if (currentMedia == null)
             {
                 hideMediaControl();
@@ -274,6 +347,7 @@ namespace MediaPlayer
                 showWelcomeBackground();
                 return;
             }
+
             showMediaControl();
             if (currentMedia?.Type == "music")
             {
@@ -291,7 +365,7 @@ namespace MediaPlayer
                 currentMediaElement.Source = new Uri(currentMedia?.FilePath, UriKind.Relative);
                 if (currentMediaElement.Source != null)
                 {
-                    handleMedia();
+                    handleMedia(playbackInfo);
                 }
             }
         }
@@ -348,6 +422,9 @@ namespace MediaPlayer
 
         private void currentMediaElement_MediaEnded(object sender, RoutedEventArgs e)
         {
+            currentMediaElement.Position = TimeSpan.Zero;
+            drawPlaybackTimeline();
+
             timerVideoTime.Stop();
             if (!isShuffling)
             {
@@ -378,7 +455,7 @@ namespace MediaPlayer
 
             // Create a timer that will update the counters and the time slider
             timerVideoTime = new DispatcherTimer();
-            timerVideoTime.Interval = TimeSpan.FromSeconds(0.05);
+            timerVideoTime.Interval = TimeSpan.FromSeconds(0.02);
             timerVideoTime.Tick += new EventHandler(timerTick);
             timerVideoTime.Start();
         }
@@ -387,16 +464,16 @@ namespace MediaPlayer
         {
             if (totalTime.TotalSeconds > 0)
             {
-                // Updating time slider
-                timelineSlider.Value = currentMediaElement.Position.TotalSeconds /
-                                   totalTime.TotalSeconds;
+                Max = (float)totalTime.TotalSeconds;
+                Default_value = (float)currentMediaElement.Position.TotalSeconds;
+                drawPlaybackTimeline();
             }
         }
 
-        private void handleMedia()
+        private void handleMedia(MediaPlaybackInfo playbackInfo = null)
         {
             currentMediaElement?.Play();
-            playMedia();
+            playMedia(playbackInfo);
         }
 
         private void playMediaButton_Click(object sender, RoutedEventArgs e)
@@ -452,9 +529,15 @@ namespace MediaPlayer
             }
         }
 
-        private void playMedia()
+        private void playMedia(MediaPlaybackInfo playbackInfo = null)
         {
             string workDir = AppDomain.CurrentDomain.BaseDirectory;
+
+            if (playbackInfo != null && playbackInfo.Position > TimeSpan.Zero)
+            {
+                currentMediaElement.Position = playbackInfo.Position;
+            }
+
             currentMediaElement?.Play();
             isPlayingMedia = true;
             Uri uri = new Uri($"{workDir}/Images/pause.png", UriKind.Absolute);
@@ -469,16 +552,6 @@ namespace MediaPlayer
             Uri uri = new Uri($"{workDir}/Images/play.png", UriKind.Absolute);
             playMediaButtonImageSource.Source = new BitmapImage(uri);
             playMediaButtonImageSource.Margin = new Thickness(2, 0, 0, 0);
-        }
-
-        private void SeekToMediaPosition(object sender, RoutedPropertyChangedEventArgs<double> args)
-        {
-            int SliderValue = (int)timelineSlider.Value;
-
-            // Overloaded constructor takes the arguments days, hours, minutes, seconds, milliseconds.
-            // Create a TimeSpan with miliseconds equal to the slider value.
-            TimeSpan ts = new TimeSpan(0, 0, 0, 0, SliderValue);
-            currentMediaElement.Position = ts;
         }
 
         private void shuffleButton_Click(object sender, RoutedEventArgs e)
@@ -522,9 +595,109 @@ namespace MediaPlayer
                 if (button.Tag is Media media)
                 {
                     mediaList.Remove(media);
+                    foreach (var mediaInfo in mediaPlaybackInfos.ToList())
+                    {
+                        if (mediaInfo.Media == media)
+                        {
+                            mediaPlaybackInfos.Remove(mediaInfo);
+                        }
+                    }
+                    
                     saveButtonCheck();
                 }
             }
+        }
+
+        float Default_value = 0.1f, Min = 0.0f, Max = 1.0f;
+        bool mouse = false;
+
+        public float Bar(float value)
+        {
+            return (float)slider.Width * (value - Min) / (float)(Max - Min);
+        }
+
+        public void Thumb(float value)
+        {
+            if (value < Min) value = Min;
+            if (value > Max) value = Max;
+            Default_value = value;
+
+            drawPlaybackTimeline();
+        }
+
+        private void slider_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            mouse = true;
+            Point relativePoint = e.GetPosition(slider);
+
+            float value = slider_width((float)relativePoint.X);
+            Thumb(value);
+
+            double seconds = totalTime.TotalSeconds * (float)relativePoint.X / slider.Width;
+            currentMediaElement.Position = TimeSpan.FromSeconds(seconds);
+
+        }
+
+        private DateTime lastPositionUpdateTime = DateTime.Now;
+        private TimeSpan updateInterval = TimeSpan.FromSeconds(0.05);
+
+        private void slider_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (!mouse) return;
+
+            Point relativePoint = e.GetPosition(slider);
+
+            float value = slider_width((float)relativePoint.X);
+            Thumb(value);
+
+            DateTime now = DateTime.Now;
+            if (now - lastPositionUpdateTime >= updateInterval)
+            {
+                double seconds = totalTime.TotalSeconds * (float)relativePoint.X / slider.Width;
+                currentMediaElement.Position = TimeSpan.FromSeconds(seconds);
+                lastPositionUpdateTime = now;
+            }
+        }
+
+        public float slider_width(float x)
+        {
+            return Min + (Max - Min) * x / (float)(slider.Width);
+        }
+
+        private void slider_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            mouse = false;
+        }
+
+        private void Slider_Loaded(object sender, RoutedEventArgs e)
+        {
+            drawPlaybackTimeline();
+        }
+
+        private void drawPlaybackTimeline()
+        {
+            float bar_side = 0.45f;
+            float x = Bar(Default_value);
+            int y = (int)(slider.Height * bar_side);
+
+            DrawingVisual drawingVisual = new DrawingVisual();
+            DrawingContext drawingContext = drawingVisual.RenderOpen();
+
+            Pen pen = new Pen(Brushes.DarkGray, 4);
+            drawingContext.DrawLine(pen, new Point(0, 0), new Point(slider.Width, 0));
+
+            // Vẽ thumb
+            Color customColor = (Color)ColorConverter.ConvertFromString("#d01273");
+            SolidColorBrush customBrush = new SolidColorBrush(customColor);
+
+            Pen redPen = new Pen(customBrush, 4);
+            drawingContext.DrawEllipse(customBrush, redPen, new Point(x + 1, y - 11), 5, 5);
+
+            // Vẽ thanh đã xem
+            drawingContext.DrawRectangle(customBrush, null, new Rect(0, y - 13, x, 4));
+
+            drawingContext.Close();
+            slider.Source = new DrawingImage(drawingVisual.Drawing);
         }
     }
 }
