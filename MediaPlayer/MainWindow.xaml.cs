@@ -68,12 +68,6 @@ namespace MediaPlayer
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             string currentDir = AppDomain.CurrentDomain.BaseDirectory;
-            mediaList.Add(new Media(currentDir + "cruel-summer1.mp3", 644000.45, thumbnail_audio));
-            mediaList.Add(new Media(currentDir + "cruel-summer2.mp3", 100, thumbnail_video));
-            mediaList.Add(new Media(currentDir + "cruel-summer3.mp3", 644000.45, thumbnail_audio));
-            mediaList.Add(new Media(currentDir + "cruel-summer4.mp3", 100, thumbnail_video));
-            mediaList.Add(new Media(currentDir + "cruel-summer5.mp3", 644000.45, thumbnail_audio));
-            mediaList.Add(new Media(currentDir + "cruel-summer6.mp3", 100, thumbnail_video));
             if (mediaList.Count == 0)
             {
                 saveButton.IsEnabled = false;
