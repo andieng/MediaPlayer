@@ -313,7 +313,7 @@ namespace MediaPlayer
             canvasPreviewImage.Visibility = Visibility.Hidden;
 
             // This happens after removing a selected item
-            if (plListView.SelectedIndex < 0)
+            if (plListView.SelectedIndex < 0 && currentMedia == null)
             {
                 return;
             }
@@ -560,13 +560,28 @@ namespace MediaPlayer
         private void playPreviousMedia()
         {
             int i = plListView.SelectedIndex;
-            if (i == 0)
+            if (isShuffling)
             {
-                plListView.SelectedIndex = plListView.Items.Count - 1;
-            }
-            else
+                if (i != -1)
+                {
+                    var exclude = new List<int>() { i };
+                    int idx = randExclude(0, plListView.Items.Count, exclude);
+                    plListView.SelectedIndex = idx;
+                } else
+                {
+                    Random rnd = new Random();
+                    plListView.SelectedIndex = rnd.Next(0, plListView.Items.Count);
+                }
+            } else
             {
-                plListView.SelectedIndex = i - 1;
+                if (i == 0)
+                {
+                    plListView.SelectedIndex = plListView.Items.Count - 1;
+                }
+                else
+                {
+                    plListView.SelectedIndex = i - 1;
+                }
             }
         }
 
@@ -578,13 +593,30 @@ namespace MediaPlayer
         private void playNextMedia()
         {
             int i = plListView.SelectedIndex;
-            if (i == plListView.Items.Count - 1)
+            if (isShuffling)
             {
-                plListView.SelectedIndex = 0;
+                if (i != -1)
+                {
+                    var exclude = new List<int>() { i };
+                    int idx = randExclude(0, plListView.Items.Count, exclude);
+                    plListView.SelectedIndex = idx;
+                }
+                else
+                {
+                    Random rnd = new Random();
+                    plListView.SelectedIndex = rnd.Next(0, plListView.Items.Count);
+                }
             }
             else
             {
-                plListView.SelectedIndex = i + 1;
+                if (i == plListView.Items.Count - 1)
+                {
+                    plListView.SelectedIndex = 0;
+                }
+                else
+                {
+                    plListView.SelectedIndex = i + 1;
+                }
             }
         }
 
@@ -676,7 +708,7 @@ namespace MediaPlayer
                             mediaPlaybackInfos.Remove(mediaInfo);
                         }
                     }
-                    
+                    plListView.SelectedIndex = -1;
                     saveButtonCheck();
                 }
             }
@@ -768,9 +800,6 @@ namespace MediaPlayer
 
         }
 
-
-
-
         public float slider_width(float x)
         {
             return Min + (Max - Min) * x / (float)(slider.Width);
@@ -843,6 +872,16 @@ namespace MediaPlayer
             string workDir = AppDomain.CurrentDomain.BaseDirectory;
             Uri uri = new Uri($"{workDir}/{relativeFilePath}", UriKind.Absolute);
             return new BitmapImage(uri);
+        }
+
+        private int randExclude(int start, int count, List<int> exclude)
+        {
+            var hashSetExclude = new HashSet<int>(exclude);
+            var range = Enumerable.Range(start, count).Where(i => !exclude.Contains(i));
+
+            var rand = new System.Random();
+            int index = rand.Next(start, count - exclude.Count);
+            return range.ElementAt(index);
         }
     }
 }
