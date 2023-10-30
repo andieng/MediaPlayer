@@ -16,7 +16,7 @@ using Path = System.IO.Path;
 using System.Net;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Windows.Media;
-using System.Drawing.Drawing2D;
+
 
 namespace MediaPlayer
 {
@@ -30,7 +30,7 @@ namespace MediaPlayer
         private ObservableCollection<Media> mediaList = new ObservableCollection<Media>();
         private ObservableCollection<Media> recentMediaList = new ObservableCollection<Media>();
 
-        string thumbnail_audio = "Images/musical-note-64x64.png";
+            string thumbnail_audio = "Images/musical-note-64x64.png";
         string thumbnail_video = "Images/film-64x64.png";
 
         bool isDelete = false;
@@ -48,7 +48,6 @@ namespace MediaPlayer
             InitializeComponent();
 
             HotkeysManager.SetupSystemHook();
-
             // Save hotkey
             HotkeysManager.AddHotkey(new GlobalHotkey(ModifierKeys.Control, Key.S, savePlaylist));
 
@@ -63,6 +62,7 @@ namespace MediaPlayer
 
             // Shuffle on/off hotkey
             HotkeysManager.AddHotkey(new GlobalHotkey(ModifierKeys.Control, Key.H, toggleShuffle));
+            canvasPreviewImage = this.canvasPreviewImage;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -309,7 +309,9 @@ namespace MediaPlayer
         }
 
         private void plListView_SelectionChanged(Object sender, SelectionChangedEventArgs e)
-        {   
+        {
+            canvasPreviewImage.Visibility = Visibility.Hidden;
+
             // This happens after removing a selected item
             if (plListView.SelectedIndex < 0)
             {
@@ -375,7 +377,6 @@ namespace MediaPlayer
                 hideMusicBackground();
                 showVideoBackground();
             }
-
             if (currentMedia?.FilePath != null)
             {
                 currentMediaElement.Source = new Uri(currentMedia?.FilePath, UriKind.Relative);
@@ -384,6 +385,8 @@ namespace MediaPlayer
                     handleMedia(playbackInfo);
                 }
             }
+            Canvas.SetLeft(canvasPreviewImage, 0); // set previewImage to 0
+           // previewImage.Visibility = Visibility.Hidden;
         }
 
         private bool updateRecentMedia(Media media)
@@ -611,6 +614,7 @@ namespace MediaPlayer
             Uri uri = new Uri($"{workDir}/Images/pause.png", UriKind.Absolute);
             playMediaButtonImageSource.Source = new BitmapImage(uri);
             playMediaButtonImageSource.Margin = new Thickness(0, 0, 0, 0);
+            canvasPreviewImage.Visibility = Visibility.Hidden;
         }
         private void pauseMedia()
         {
@@ -620,6 +624,8 @@ namespace MediaPlayer
             Uri uri = new Uri($"{workDir}/Images/play.png", UriKind.Absolute);
             playMediaButtonImageSource.Source = new BitmapImage(uri);
             playMediaButtonImageSource.Margin = new Thickness(2, 0, 0, 0);
+            canvasPreviewImage.Visibility = Visibility.Hidden;
+
         }
 
         private void shuffleButton_Click(object sender, RoutedEventArgs e)
@@ -703,7 +709,7 @@ namespace MediaPlayer
 
             double seconds = totalTime.TotalSeconds * (float)relativePoint.X / slider.Width;
             currentMediaElement.Position = TimeSpan.FromSeconds(seconds);
-
+            canvasPreviewImage.Visibility = Visibility.Hidden;
         }
 
         private DateTime lastPositionUpdateTime = DateTime.Now;
@@ -714,7 +720,6 @@ namespace MediaPlayer
             if (!mouse) return;
 
             Point relativePoint = e.GetPosition(slider);
-
             float value = slider_width((float)relativePoint.X);
             Thumb(value);
 
@@ -724,8 +729,47 @@ namespace MediaPlayer
                 double seconds = totalTime.TotalSeconds * (float)relativePoint.X / slider.Width;
                 currentMediaElement.Position = TimeSpan.FromSeconds(seconds);
                 lastPositionUpdateTime = now;
+
+                UpdateCanvasPreviewImage(relativePoint.X);
             }
         }
+
+        private void UpdateCanvasPreviewImage(double sliderPositionX)
+        {
+            // Calculate the position of the canvas preview image
+            double canvasPreviewImageX = sliderPositionX - (canvasPreviewImage.ActualWidth / 2);
+
+            // Ensure the canvas preview image stays within the bounds of the slider
+            if (canvasPreviewImageX < 0)
+            {
+                canvasPreviewImageX = 0;
+            }
+            else if (canvasPreviewImageX > slider.ActualWidth - canvasPreviewImage.ActualWidth)
+            {
+                canvasPreviewImageX = slider.ActualWidth - canvasPreviewImage.ActualWidth;
+            }
+                // Create a RenderTargetBitmap to capture the frame
+                int width = (int)currentMediaElement.ActualWidth;
+                int height = (int)currentMediaElement.ActualHeight;
+            if(currentMedia.FilePath.Contains("mp4"))
+            {
+                canvasPreviewImage.Background = new SolidColorBrush(Colors.Transparent);
+                RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap(width, height, 60, 60, PixelFormats.Pbgra32);
+                renderTargetBitmap.Render(currentMediaElement);
+                WriteableBitmap bitmap = new WriteableBitmap(renderTargetBitmap);
+                previewImage.Source = bitmap;
+            }
+            else{
+                previewImage.Source = currentMedia.PreviewImage;
+                canvasPreviewImage.Background = new SolidColorBrush(Colors.Black);
+            }
+            Canvas.SetLeft(canvasPreviewImage, canvasPreviewImageX);
+            canvasPreviewImage.Visibility = Visibility.Visible;
+
+        }
+
+
+
 
         public float slider_width(float x)
         {
@@ -735,6 +779,7 @@ namespace MediaPlayer
         private void slider_MouseUp(object sender, MouseButtonEventArgs e)
         {
             mouse = false;
+            canvasPreviewImage.Visibility = Visibility.Hidden;
         }
 
         private void Slider_Loaded(object sender, RoutedEventArgs e)
