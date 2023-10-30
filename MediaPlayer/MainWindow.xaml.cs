@@ -754,7 +754,7 @@ namespace MediaPlayer
             if(currentMedia.FilePath.Contains("mp4"))
             {
                 canvasPreviewImage.Background = new SolidColorBrush(Colors.Transparent);
-                RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap(width, height, 100, 80, PixelFormats.Pbgra32);
+                RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap(width, height, 60, 60, PixelFormats.Pbgra32);
                 renderTargetBitmap.Render(currentMediaElement);
                 WriteableBitmap bitmap = new WriteableBitmap(renderTargetBitmap);
                 previewImage.Source = bitmap;

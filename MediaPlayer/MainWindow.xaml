@@ -277,7 +277,7 @@
 						  Visibility="Hidden" ScrubbingEnabled="True" MediaEnded="currentMediaElement_MediaEnded"
 						  MediaOpened="currentMediaElement_MediaOpened" />
 			<!--Preview-->
-			<Canvas VerticalAlignment="Bottom" Margin="0,0,0,120">
+			<Canvas VerticalAlignment="Bottom" Margin="0,0,0,90">
 				<Canvas x:Name="canvasPreviewImage" Width="200" Height="120" Visibility="Hidden" >
 					<Image x:Name="previewImage" Width="200" Height="120" />
 				</Canvas>
