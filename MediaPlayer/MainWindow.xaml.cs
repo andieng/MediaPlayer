@@ -405,33 +405,6 @@ namespace MediaPlayer
                 recentMediaList.Insert(0, media);
             }
 
-
-            //// If list reachs limit (3 media)
-            //if (recentMediaList.Count == 3)
-            //{
-            //    // If media is already in the list
-            //    if (isContained)
-            //    {
-            //        // Remove it from list
-            //        recentMediaList.Remove(media);
-            //    }
-            //    // If not in the list
-            //    else
-            //    {
-            //        // Remove the last media from list
-            //        recentMediaList.RemoveAt(recentMediaList.Count - 1);
-            //    }
-
-            //    // Add media to the first position
-            //    recentMediaList.Add(media);
-            //}
-            //// If list has not reached limit yet
-            //// and media is not in the list
-            //else if (!isContained)
-            //{
-            //    recentMediaList.Add(media);
-            //}
-
             return true;
         }
 
@@ -702,7 +675,10 @@ namespace MediaPlayer
                             mediaPlaybackInfos.Remove(mediaInfo);
                         }
                     }
-                    plListView.SelectedIndex = -1;
+                    if (media == plListView.SelectedItem)
+                    {
+                        plListView.SelectedIndex = -1;
+                    }
                     saveButtonCheck();
                 }
             }
