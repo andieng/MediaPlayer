@@ -16,7 +16,7 @@ using Path = System.IO.Path;
 using System.Net;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Windows.Media;
-
+using System.Threading.Tasks;
 
 namespace MediaPlayer
 {
@@ -30,7 +30,7 @@ namespace MediaPlayer
         private ObservableCollection<Media> mediaList = new ObservableCollection<Media>();
         private ObservableCollection<Media> recentMediaList = new ObservableCollection<Media>();
 
-            string thumbnail_audio = "Images/musical-note-64x64.png";
+        string thumbnail_audio = "Images/musical-note-64x64.png";
         string thumbnail_video = "Images/film-64x64.png";
 
         bool isDelete = false;
@@ -185,8 +185,9 @@ namespace MediaPlayer
             savePlaylist();
         }
 
-        private void savePlaylist()
+        private async void savePlaylist()
         {
+            await Task.Delay(100);
             var folderDialog = new CommonOpenFileDialog
             {
                 IsFolderPicker = true,
@@ -667,6 +668,10 @@ namespace MediaPlayer
             {
                 if (button.Tag is Media media)
                 {
+                    if (media == plListView.SelectedItem)
+                    {
+                        plListView.SelectedIndex = -1;
+                    }
                     mediaList.Remove(media);
                     foreach (var mediaInfo in mediaPlaybackInfos.ToList())
                     {
@@ -674,10 +679,6 @@ namespace MediaPlayer
                         {
                             mediaPlaybackInfos.Remove(mediaInfo);
                         }
-                    }
-                    if (media == plListView.SelectedItem)
-                    {
-                        plListView.SelectedIndex = -1;
                     }
                     saveButtonCheck();
                 }
