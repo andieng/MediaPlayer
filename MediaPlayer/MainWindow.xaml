@@ -129,7 +129,7 @@
 
 				<!--Recent media list view-->
 				<ListView x:Name="recentListView" Grid.Row="1" Grid.ColumnSpan="2"
-					  Margin="6,0,6,2" BorderThickness="0" Visibility="Collapsed"
+					  Margin="6,0,6,2" BorderThickness="0" Visibility="Collapsed" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
 					  ItemContainerStyle="{StaticResource ListViewTransparentStyle}">
 					<ListView.ItemTemplate>
 						<DataTemplate>
@@ -149,7 +149,7 @@
 								</Border>
 
 								<!--Media's info-->
-								<StackPanel Grid.Column="1" Margin="10 0 0 0" VerticalAlignment="Center">
+								<StackPanel Grid.Column="1" Margin="10,0,10,0" VerticalAlignment="Center">
 									<!--Media's name-->
 									<TextBlock FontWeight="Medium" FontSize="14" Text="{Binding Name}" Margin="0 0 0 4" TextTrimming="CharacterEllipsis">
 										<TextBlock.ToolTip>
